@@ -5,5 +5,10 @@ export default class extends Controller {
 
   toggle() {
     this.panelTarget.classList.toggle("hidden")
+
+    if (!this.panelTarget.classList.contains("hidden")) {
+      const cm = this.panelTarget.querySelector(".CodeMirror")?.CodeMirror
+      if (cm) cm.refresh()
+    }
   }
 }
