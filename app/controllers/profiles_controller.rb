@@ -12,6 +12,10 @@ class ProfilesController < ApplicationController
         flash.now[:alert] = "Lösenorden matchar inte"
         return render :edit, status: :unprocessable_entity
       end
+      if attrs[:password].length < 8
+        flash.now[:alert] = "Lösenordet måste vara minst 8 tecken"
+        return render :edit, status: :unprocessable_entity
+      end
       attrs[:password_hash] = User.hash_password(attrs[:password])
     end
 

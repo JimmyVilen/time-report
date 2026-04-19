@@ -118,14 +118,16 @@ class TimeEntriesController < ApplicationController
     entries_data = params[:entries]
     return head :bad_request unless entries_data.is_a?(Array)
 
-    entries_data.each do |ep|
-      current_user.time_entries.where(id: ep[:id].to_i).update_all(position: ep[:position].to_i)
+    TimeEntry.transaction do
+      entries_data.each do |ep|
+        current_user.time_entries.where(id: ep[:id].to_i).update_all(position: ep[:position].to_i)
+      end
     end
     head :ok
   end
 
   def weekly_summary
-    date       = Date.parse(params[:date] || Date.today.iso8601)
+    date       = safe_parse_date(params[:date])
     week_start = date.beginning_of_week(:monday)
     week_end   = week_start + 6
     entries    = current_user.time_entries
@@ -181,7 +183,7 @@ class TimeEntriesController < ApplicationController
     started = JiraClient.format_worklog_date(@entry.start_time)
     worklog = client.create_worklog(
       issue_key:          issue_key,
-      time_spent_seconds: @entry.duration_minutes * 60,
+      time_spent_seconds: @entry.effective_duration_minutes * 60,
       started:            started,
       comment:            @entry.description
     )
@@ -215,5 +217,11 @@ class TimeEntriesController < ApplicationController
     Time.parse("#{date_str}T#{value}:00")
   rescue ArgumentError, TypeError
     nil
+  end
+
+  def safe_parse_date(str)
+    Date.iso8601(str.to_s)
+  rescue ArgumentError, TypeError
+    Date.today
   end
 end

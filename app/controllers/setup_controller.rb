@@ -18,6 +18,11 @@ class SetupController < ApplicationController
       return render :new, status: :unprocessable_entity
     end
 
+    if password.length < 8
+      flash.now[:alert] = "Lösenordet måste vara minst 8 tecken"
+      return render :new, status: :unprocessable_entity
+    end
+
     user = User.new(
       email:         email,
       password_hash: User.hash_password(password),

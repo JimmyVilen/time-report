@@ -67,7 +67,7 @@ export default class extends Controller {
                   class="w-full flex items-center gap-2 px-3 py-2 text-left text-sm rounded-lg hover:bg-accent/10 transition-colors"
                   data-action="click->task-selector#createPlain">
             <span class="text-accent font-medium shrink-0">Ny task</span>
-            <span class="text-xs text-foreground-muted truncate">Skapar "${this.inputTarget.value.trim()}" och väljer den</span>
+            <span class="text-xs text-foreground-muted truncate">Skapar &quot;${this._escape(this.inputTarget.value.trim())}&quot; och väljer den</span>
           </button>
         </div>`
     }

@@ -5,6 +5,9 @@ class TimeEntry < ApplicationRecord
   belongs_to :task
 
   validates :date, presence: true, format: { with: /\A\d{4}-\d{2}-\d{2}\z/ }
+  validates :task_id, presence: true
+  validate :end_time_after_start_time
+  validate :task_belongs_to_user
 
   def effective_duration_minutes
     if start_time && end_time
@@ -17,13 +20,23 @@ class TimeEntry < ApplicationRecord
 
   def can_push_to_jira?
     return false unless task&.jira_url.present?
-    return false unless duration_minutes.to_i > 0
-    return false unless start_time && end_time
-    diff = ((end_time - start_time) / 60).round
-    diff > 0 && diff == duration_minutes
+    return false unless effective_duration_minutes.to_i > 0
+    start_time.present? && end_time.present?
   end
 
   def pushed?
     pushed_to_system.present?
+  end
+
+  private
+
+  def end_time_after_start_time
+    return unless start_time && end_time
+    errors.add(:end_time, "must be after start time") if end_time <= start_time
+  end
+
+  def task_belongs_to_user
+    return unless task && user_id
+    errors.add(:task, "must belong to this user") if task.user_id != user_id
   end
 end

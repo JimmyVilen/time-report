@@ -1,6 +1,6 @@
 class DashboardController < ApplicationController
   def index
-    @selected_date = params[:date] || Date.today.iso8601
+    @selected_date = safe_parse_date(params[:date]).iso8601
     @tasks         = current_user.tasks.active.ordered
     @time_entries  = current_user.time_entries
                        .where(date: @selected_date)
@@ -9,7 +9,7 @@ class DashboardController < ApplicationController
     @daily_note    = current_user.daily_notes.find_by(date: @selected_date)
     @new_entry     = TimeEntry.new(date: @selected_date)
 
-    week_start    = Date.parse(@selected_date).beginning_of_week(:monday)
+    week_start    = Date.iso8601(@selected_date).beginning_of_week(:monday)
     week_end      = week_start + 6
     week_entries  = current_user.time_entries
                       .where(date: week_start.iso8601..week_end.iso8601)
@@ -20,6 +20,12 @@ class DashboardController < ApplicationController
   end
 
   private
+
+  def safe_parse_date(str)
+    Date.iso8601(str.to_s)
+  rescue ArgumentError, TypeError
+    Date.today
+  end
 
   def build_weekly_days(week_start, week_end, entries)
     (week_start..week_end).map do |d|
