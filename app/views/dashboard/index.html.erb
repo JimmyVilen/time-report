@@ -1,0 +1,109 @@
+<%= turbo_frame_tag "dashboard-frame" do %>
+  <div class="flex min-h-[70vh] w-full flex-col gap-4 lg:flex-row">
+
+    <%# Weekly Summary Sidebar %>
+    <aside class="w-full shrink-0 lg:w-72">
+      <div class="rounded-2xl border border-border bg-background-card p-4">
+        <div class="mb-3 flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wide text-foreground-muted">Vecka <%= @week_number %></span>
+          <span class="text-xs text-foreground-muted"><%= format_duration(@week_total) %> totalt</span>
+        </div>
+        <div class="space-y-1">
+          <% @weekly_days.each do |day| %>
+            <% is_selected = day[:date] == @selected_date %>
+            <%= link_to dashboard_path(date: day[:date]),
+                  data: { turbo_frame: "dashboard-frame" },
+                  class: "flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors #{ is_selected ? 'bg-accent/10 text-accent' : 'text-foreground-muted hover:bg-background-card-hover hover:text-foreground' }" do %>
+              <div class="flex items-center gap-2">
+                <span class="w-24 capitalize font-medium"><%= day[:day_name] %></span>
+                <% if day[:first_start] && day[:last_end] %>
+                  <span class="text-xs text-foreground-muted"><%= day[:first_start] %>–<%= day[:last_end] %></span>
+                <% end %>
+              </div>
+              <span class="<%= day[:total_minutes].to_i > 0 ? 'text-foreground' : 'text-foreground-muted' %>">
+                <%= day[:total_minutes].to_i > 0 ? format_duration(day[:total_minutes]) : "–" %>
+              </span>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </aside>
+
+    <%# Main Content %>
+    <div class="flex min-w-0 flex-1 flex-col gap-4">
+
+      <%# Date heading navigation %>
+      <div class="flex items-center gap-2">
+        <% prev_date = (Date.parse(@selected_date) - 1).iso8601 %>
+        <% next_date = (Date.parse(@selected_date) + 1).iso8601 %>
+        <%= link_to dashboard_path(date: prev_date), data: { turbo_frame: "dashboard-frame" },
+              class: "rounded-lg border border-border p-1.5 text-foreground-muted hover:border-accent hover:text-accent transition-colors" do %>
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        <% end %>
+
+        <h1 class="flex-1 text-center text-lg font-semibold text-foreground capitalize">
+          <%= I18n.l(Date.parse(@selected_date), format: :day_name) %>
+        </h1>
+
+        <%= link_to dashboard_path(date: next_date), data: { turbo_frame: "dashboard-frame" },
+              class: "rounded-lg border border-border p-1.5 text-foreground-muted hover:border-accent hover:text-accent transition-colors" do %>
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        <% end %>
+      </div>
+
+      <%# Action buttons + expandable panels %>
+      <div data-controller="note-panel time-entry-form"
+           data-time-entry-form-recent-description-url-value="<%= recent_description_time_entries_path %>">
+
+        <%# Buttons row %>
+        <div class="flex gap-2 items-center">
+          <button type="button"
+                  class="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover transition-colors"
+                  data-action="click->time-entry-form#toggle">
+            <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Registrera tid
+          </button>
+
+          <button type="button"
+                  class="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-foreground-muted hover:border-accent hover:text-foreground transition-colors"
+                  data-action="click->note-panel#toggle">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+            <span id="daily-note-toggle-text">
+              <%= render "daily_notes/note_toggle_text", note: @daily_note %>
+            </span>
+          </button>
+        </div>
+
+        <%# Note panel — full width %>
+        <%= render "daily_notes/note_panel", note: @daily_note, date: @selected_date %>
+
+        <%# Time entry form panel — full width %>
+        <%= render "time_entries/new_form", entry: @new_entry, date: @selected_date, tasks: @tasks %>
+      </div>
+
+      <%# Time entries list %>
+      <div id="time-entries-<%= @selected_date %>"
+           data-controller="sortable"
+           data-sortable-url-value="<%= reorder_time_entries_path %>"
+           class="space-y-2">
+        <% @time_entries.each do |entry| %>
+          <%= render "time_entries/time_entry", entry: entry %>
+        <% end %>
+      </div>
+
+      <%# Daily total %>
+      <div id="time-entries-total">
+        <%= render "time_entries/total", entries: @time_entries %>
+      </div>
+
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,5 @@
+<% if note&.content.present? %>
+  Notering · <span class="text-xs text-foreground-muted truncate max-w-48 inline-block align-bottom"><%= note.content.lines.first&.strip&.truncate(60) %></span>
+<% else %>
+  Lägg till notering
+<% end %>

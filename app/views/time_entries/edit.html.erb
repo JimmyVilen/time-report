@@ -1,0 +1,64 @@
+<%= turbo_frame_tag dom_id(@entry) do %>
+  <div class="rounded-xl border border-accent bg-background-card p-4">
+    <h3 class="mb-3 text-sm font-medium text-foreground">Redigera tidsrapport</h3>
+    <%= form_with model: @entry, url: time_entry_path(@entry), method: :patch,
+          class: "space-y-3",
+          data: { turbo_frame: dom_id(@entry) } do |f| %>
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div class="sm:col-span-2">
+          <label class="mb-1 block text-xs font-medium text-foreground-muted">Task</label>
+          <select name="time_entry[task_id]" required
+                  class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent">
+            <% @tasks.each do |task| %>
+              <option value="<%= task.id %>" <%= task.id == @entry.task_id ? "selected" : "" %>>
+                <%= task.jira_key ? "[#{task.jira_key}] " : "" %><%= task.title %>
+              </option>
+            <% end %>
+          </select>
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-foreground-muted">Varaktighet</label>
+          <input type="text" name="time_entry[duration]"
+                 value="<%= @entry.duration_minutes ? "#{@entry.duration_minutes}m" : '' %>"
+                 placeholder="t.ex. 1h 30m"
+                 class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder-foreground-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-foreground-muted">Starttid</label>
+          <input type="text" name="time_entry[start_time]"
+                 value="<%= @entry.start_time&.strftime('%H:%M') %>"
+                 placeholder="HH:MM" maxlength="5"
+                 class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder-foreground-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                 data-controller="time-input" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-foreground-muted">Sluttid</label>
+          <input type="text" name="time_entry[end_time]"
+                 value="<%= @entry.end_time&.strftime('%H:%M') %>"
+                 placeholder="HH:MM" maxlength="5"
+                 class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder-foreground-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                 data-controller="time-input" />
+        </div>
+
+        <div class="sm:col-span-2">
+          <label class="mb-1 block text-xs font-medium text-foreground-muted">Beskrivning</label>
+          <input type="text" name="time_entry[description]"
+                 value="<%= @entry.description %>"
+                 placeholder="Vad jobbade du med?"
+                 class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder-foreground-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent" />
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-1">
+        <%= link_to "Avbryt", dashboard_path(date: @entry.date),
+              class: "rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground-muted hover:text-foreground transition-colors",
+              data: { turbo_frame: dom_id(@entry) } %>
+        <%= f.submit "Spara",
+              class: "rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover transition-colors cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

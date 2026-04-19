@@ -1,0 +1,59 @@
+<div class="space-y-6" data-controller="tabs">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-bold text-foreground">Tasks</h1>
+  </div>
+
+  <%# Tabs %>
+  <div class="flex gap-1 rounded-lg border border-border bg-background-card p-1 w-fit">
+    <button type="button"
+            class="rounded-md px-4 py-1.5 text-sm font-medium transition-colors bg-accent text-white"
+            data-tabs-target="tab"
+            data-action="click->tabs#show"
+            data-tabs-panel="active-panel">
+      Aktiva Tasks
+    </button>
+    <button type="button"
+            class="rounded-md px-4 py-1.5 text-sm font-medium transition-colors text-foreground-muted hover:text-foreground"
+            data-tabs-target="tab"
+            data-action="click->tabs#show"
+            data-tabs-panel="archived-panel">
+      Arkiverade (<%= @archived_tasks.count %>)
+    </button>
+  </div>
+
+  <%# Active Tasks Panel %>
+  <div id="active-panel" data-tabs-target="panel">
+
+    <%# New task form / button %>
+    <%= turbo_frame_tag "task-form-frame" do %>
+      <%= render "tasks/new_button" %>
+    <% end %>
+
+    <div id="active-tasks" class="mt-4 space-y-2">
+      <% if @active_tasks.empty? %>
+        <div class="rounded-xl border border-border bg-background-card p-8 text-center text-sm text-foreground-muted">
+          Inga aktiva tasks. Skapa din första task ovan.
+        </div>
+      <% else %>
+        <% @active_tasks.each do |task| %>
+          <%= render "tasks/task", task: task %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Archived Tasks Panel %>
+  <div id="archived-panel" class="hidden" data-tabs-target="panel">
+    <div id="archived-tasks" class="space-y-2">
+      <% if @archived_tasks.empty? %>
+        <div class="rounded-xl border border-border bg-background-card p-8 text-center text-sm text-foreground-muted">
+          Inga arkiverade tasks.
+        </div>
+      <% else %>
+        <% @archived_tasks.each do |task| %>
+          <%= render "tasks/task", task: task %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
