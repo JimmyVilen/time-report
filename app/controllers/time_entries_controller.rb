@@ -1,5 +1,6 @@
 class TimeEntriesController < ApplicationController
   include ActionView::RecordIdentifier
+  include WeeklySummaryBuildable
 
   before_action :set_entry, only: [:edit, :update, :destroy, :push_to_jira]
 
@@ -44,7 +45,8 @@ class TimeEntriesController < ApplicationController
               locals: { entries: current_user.time_entries.where(date: @date).includes(:task).order(position: :asc) }),
             turbo_stream.replace("new-entry-form",
               partial: "time_entries/new_form",
-              locals: { entry: TimeEntry.new(date: @date), date: @date, tasks: @tasks })
+              locals: { entry: TimeEntry.new(date: @date), date: @date, tasks: @tasks }),
+            week_summary_stream(@date)
           ]
         }
         format.html { redirect_to dashboard_path(date: @date) }
@@ -88,7 +90,8 @@ class TimeEntriesController < ApplicationController
               partial: "time_entries/time_entry", locals: { entry: @entry.reload }),
             turbo_stream.replace("time-entries-total",
               partial: "time_entries/total",
-              locals: { entries: current_user.time_entries.where(date: @date).includes(:task).order(position: :asc) })
+              locals: { entries: current_user.time_entries.where(date: @date).includes(:task).order(position: :asc) }),
+            week_summary_stream(@date)
           ]
         }
         format.html { redirect_to dashboard_path(date: @date) }
@@ -107,7 +110,8 @@ class TimeEntriesController < ApplicationController
           turbo_stream.remove(dom_id(@entry)),
           turbo_stream.replace("time-entries-total",
             partial: "time_entries/total",
-            locals: { entries: current_user.time_entries.where(date: date).includes(:task).order(position: :asc) })
+            locals: { entries: current_user.time_entries.where(date: date).includes(:task).order(position: :asc) }),
+          week_summary_stream(date.iso8601)
         ]
       }
       format.html { redirect_to dashboard_path(date: date) }
@@ -207,6 +211,22 @@ class TimeEntriesController < ApplicationController
   end
 
   private
+
+  def week_summary_stream(date_str)
+    date        = Date.iso8601(date_str)
+    week_start  = date.beginning_of_week(:monday)
+    week_end    = week_start + 6
+    entries     = current_user.time_entries.where(date: week_start.iso8601..week_end.iso8601).order(date: :asc)
+    weekly_days = build_weekly_days(week_start, week_end, entries)
+    turbo_stream.replace("week-summary",
+      partial: "dashboard/week_summary",
+      locals: {
+        weekly_days:   weekly_days,
+        week_number:   date.cweek,
+        week_total:    weekly_days.sum { |d| d[:total_minutes] },
+        selected_date: date_str
+      })
+  end
 
   def set_entry
     @entry = current_user.time_entries.find(params[:id])
