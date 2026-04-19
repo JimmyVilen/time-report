@@ -8,7 +8,7 @@
     <div class="rounded-2xl border border-border bg-background-card p-6 shadow-sm">
       <%= render "shared/flash" %>
 
-      <%= form_with url: setup_path, method: :post, class: "space-y-4" do |f| %>
+      <%= form_with url: setup_path, method: :post, class: "space-y-4", data: { turbo: false } do |f| %>
         <div>
           <label class="mb-1 block text-sm font-medium text-foreground" for="email">E-post</label>
           <%= f.email_field :email, id: "email",
