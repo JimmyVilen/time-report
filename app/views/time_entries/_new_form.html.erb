@@ -4,7 +4,7 @@
 
   <%= form_with url: time_entries_path, method: :post,
         class: "space-y-3" do |f| %>
-    <%= f.hidden_field :date, value: date %>
+    <input type="hidden" name="time_entry[date]" value="<%= date %>">
 
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
       <div class="sm:col-span-2">
