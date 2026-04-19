@@ -17,7 +17,7 @@
           </select>
         </div>
 
-        <div>
+        <div class="sm:col-span-2">
           <label class="mb-1 block text-xs font-medium text-foreground-muted">Varaktighet</label>
           <input type="text" name="time_entry[duration]"
                  value="<%= @entry.duration_minutes ? "#{@entry.duration_minutes}m" : '' %>"
