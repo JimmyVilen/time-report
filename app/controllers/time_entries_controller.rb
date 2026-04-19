@@ -1,4 +1,6 @@
 class TimeEntriesController < ApplicationController
+  include ActionView::RecordIdentifier
+
   before_action :set_entry, only: [:edit, :update, :destroy, :push_to_jira]
 
   def new
@@ -58,7 +60,7 @@ class TimeEntriesController < ApplicationController
   end
 
   def update
-    @date  = @entry.date
+    @date  = @entry.date.iso8601
     @tasks = current_user.tasks.active.ordered
 
     begin
