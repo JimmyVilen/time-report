@@ -1,33 +1,36 @@
+<div class="space-y-6">
+  <div class="flex mb-4 items-center justify-between">
+     <h1 class="text-xl font-bold text-foreground">Tasks</h1>
+  </div>
+</div>
+
 <div class="space-y-6" data-controller="tabs">
   <div class="flex items-center justify-between">
-    <h1 class="text-xl font-bold text-foreground">Tasks</h1>
-  </div>
-
-  <%# Tabs %>
-  <div class="flex gap-1 rounded-lg border border-border bg-background-card p-1 w-fit">
-    <button type="button"
-            class="rounded-md px-4 py-1.5 text-sm font-medium transition-colors bg-accent text-white"
-            data-tabs-target="tab"
-            data-action="click->tabs#show"
-            data-tabs-panel="active-panel">
-      Aktiva Tasks
-    </button>
-    <button type="button"
-            class="rounded-md px-4 py-1.5 text-sm font-medium transition-colors text-foreground-muted hover:text-foreground"
-            data-tabs-target="tab"
-            data-action="click->tabs#show"
-            data-tabs-panel="archived-panel">
-      Arkiverade (<%= @archived_tasks.count %>)
-    </button>
-  </div>
-
-  <%# Active Tasks Panel %>
-  <div id="active-panel" data-tabs-target="panel">
-
     <%# New task form / button %>
     <%= turbo_frame_tag "task-form-frame" do %>
       <%= render "tasks/new_button" %>
     <% end %>
+    <%# Tabs %>
+    <div class="flex gap-1 rounded-lg border border-border bg-background-card p-1">
+      <button type="button"
+              class="rounded-md px-4 py-1.5 text-sm font-medium transition-colors bg-accent text-white"
+              data-tabs-target="tab"
+              data-action="click->tabs#show"
+              data-tabs-panel="active-panel">
+        Aktiva Tasks
+      </button>
+      <button type="button"
+              class="rounded-md px-4 py-1.5 text-sm font-medium transition-colors text-foreground-muted hover:text-foreground"
+              data-tabs-target="tab"
+              data-action="click->tabs#show"
+              data-tabs-panel="archived-panel">
+        Arkiverade (<%= @archived_tasks.count %>)
+      </button>
+    </div>
+  </div>
+
+  <%# Active Tasks Panel %>
+  <div id="active-panel" data-tabs-target="panel">
 
     <div id="active-tasks" class="mt-4 space-y-2">
       <% if @active_tasks.empty? %>

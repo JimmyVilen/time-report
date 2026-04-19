@@ -1,7 +1,11 @@
 <%= turbo_frame_tag dom_id(task) do %>
+  <% count = task.time_entries.count %>
+  <% total_minutes = task.time_entries.sum(:duration_minutes) %>
   <div id="<%= dom_id(task) %>"
        class="card-glow group rounded-xl border border-border bg-background-card px-4 py-3 transition-colors hover:bg-background-card-hover">
-    <div class="flex items-start justify-between gap-3">
+    <div class="flex items-center gap-3">
+
+      <%# Content %>
       <div class="min-w-0 flex-1">
         <div class="flex items-center gap-2">
           <% if task.jira_url.present? %>
@@ -16,13 +20,18 @@
         <% if task.description.present? %>
           <p class="mt-0.5 text-xs text-foreground-muted line-clamp-2"><%= task.description %></p>
         <% end %>
-        <% count = task.time_entries.count %>
+      </div>
+
+      <%# Duration & time — furthest right before actions %>
+      <div class="shrink-0 w-20 text-right text-xs text-foreground-muted">
         <% if count > 0 %>
-          <p class="mt-1 text-xs text-foreground-muted"><%= count %> tidsrapport<%= count == 1 ? "" : "er" %></p>
+          <div class="tabular-nums"><%= total_minutes / 60 %>h <%= '%02d' % (total_minutes % 60) %>m</div>
+          <div><%= count %> rapport<%= count == 1 ? "" : "er" %></div>
         <% end %>
       </div>
 
-      <div class="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <%# Actions — fixed-width vertical column %>
+      <div class="flex shrink-0 w-8 flex-col items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
         <%# Favorite toggle %>
         <%= button_to favorite_task_path(task), method: :patch,
               class: "rounded-lg p-1.5 transition-colors #{ task.is_favorite ? 'text-yellow-400 hover:text-yellow-500' : 'text-foreground-muted hover:text-yellow-400' }",
@@ -65,6 +74,7 @@
           <% end %>
         <% end %>
       </div>
+
     </div>
   </div>
 <% end %>

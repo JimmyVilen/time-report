@@ -1,6 +1,6 @@
 <%= turbo_frame_tag dom_id(entry) do %>
   <div id="<%= dom_id(entry) %>"
-       class="card-glow group relative rounded-xl border border-border bg-background-card transition-colors hover:bg-background-card-hover"
+       class="card-glow group relative rounded-xl border border-border bg-background-card transition-colors hover:bg-background-card-hover mb-1.5"
        data-entry-id="<%= entry.id %>">
     <div class="flex items-start gap-3 px-4 py-3">
       <%# Drag handle %>
@@ -28,21 +28,8 @@
             <% end %>
           </div>
 
-          <%# Duration & Time %>
+          <%# Actions % Durations %>
           <div class="flex shrink-0 items-center gap-3 text-right">
-            <div>
-              <% minutes = entry.effective_duration_minutes.to_i %>
-              <% if minutes > 0 %>
-                <span class="text-sm font-semibold text-foreground"><%= format_duration(minutes) %></span>
-              <% end %>
-              <% if entry.start_time && entry.end_time %>
-                <div class="text-xs text-foreground-muted">
-                  <%= entry.start_time.strftime("%H:%M") %>–<%= entry.end_time.strftime("%H:%M") %>
-                </div>
-              <% elsif entry.start_time %>
-                <div class="text-xs text-foreground-muted"><%= entry.start_time.strftime("%H:%M") %>–</div>
-              <% end %>
-            </div>
 
             <%# Actions %>
             <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -94,6 +81,24 @@
                 </svg>
               <% end %>
             </div>
+
+            <%# Duration & Time %>
+            <% minutes = entry.effective_duration_minutes.to_i %>
+            <div class="w-20">
+              <div class="text-sm font-semibold text-foreground text-right">
+                <%= minutes > 0 ? format_duration(minutes) : "" %>
+              </div>
+              <div class="text-xs text-foreground-muted text-right">
+                <% if entry.start_time && entry.end_time %>
+                  <%= entry.start_time.strftime("%H:%M") %>–<%= entry.end_time.strftime("%H:%M") %>
+                <% elsif entry.start_time %>
+                  <%= entry.start_time.strftime("%H:%M") %>–
+                <% else %>
+                  &nbsp;
+                <% end %>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
