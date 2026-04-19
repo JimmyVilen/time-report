@@ -1,24 +1,43 @@
-# README
+# Time Report
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A time tracking and task management web application built with Rails. Log work time against tasks, write daily notes, and optionally sync with Jira.
 
-Things you may want to cover:
+## Features
 
-* Ruby version
+- Daily time entry view with weekly summary
+- Task management with favorites and archiving
+- Flexible time input: start/end times or duration
+- Daily notes
+- Jira integration: fetch issue details and push time logs
+- User authentication
 
-* System dependencies
+## Tech Stack
 
-* Configuration
+- **Ruby** 3.4.8 / **Rails** 8.1.3
+- **Database**: SQLite3
+- **Frontend**: TailwindCSS, Turbo, Stimulus
 
-* Database creation
+## Setup
 
-* Database initialization
+```bash
+bin/setup          # Install dependencies, prepare database
+bin/dev            # Start development server with asset bundling
+```
 
-* How to run the test suite
+To reset the database:
 
-* Services (job queues, cache servers, search engines, etc.)
+```bash
+bin/setup --reset
+```
 
-* Deployment instructions
+## Running tests
 
-* ...
+```bash
+bin/rails test
+```
+
+## Security analysis
+
+```bash
+bundle exec brakeman
+```
