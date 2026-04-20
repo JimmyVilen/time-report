@@ -30,10 +30,13 @@ class TimeEntriesController < ApplicationController
       return render :new, status: :unprocessable_entity
     end
 
-    current_user.time_entries.where(date: @date).update_all("position = position + 1")
-    @entry.position = 0
+    TimeEntry.transaction do
+      current_user.time_entries.where(date: @date).update_all("position = position + 1")
+      @entry.position = 0
+      raise ActiveRecord::Rollback unless @entry.save
+    end
 
-    if @entry.save
+    if @entry.persisted?
       @entry.task.touch(:last_used_at)
       respond_to do |format|
         format.turbo_stream {

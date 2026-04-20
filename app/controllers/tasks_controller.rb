@@ -1,4 +1,6 @@
 class TasksController < ApplicationController
+  include ActionView::RecordIdentifier
+
   before_action :set_task, only: [:edit, :update, :destroy, :favorite, :restore]
 
   def index
