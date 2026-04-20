@@ -2,7 +2,7 @@ class TimeEntriesController < ApplicationController
   include ActionView::RecordIdentifier
   include WeeklySummaryBuildable
 
-  before_action :set_entry, only: [:edit, :update, :destroy, :push_to_jira]
+  before_action :set_entry, only: [:edit, :update, :destroy, :push_to_jira, :duplicate]
 
   def new
     @date  = params[:date] || Date.today.iso8601
@@ -114,7 +114,7 @@ class TimeEntriesController < ApplicationController
           turbo_stream.replace("time-entries-total",
             partial: "time_entries/total",
             locals: { entries: current_user.time_entries.where(date: date).includes(:task).order(position: :asc) }),
-          week_summary_stream(date.iso8601)
+          week_summary_stream(date.to_s)
         ]
       }
       format.html { redirect_to dashboard_path(date: date) }
@@ -167,6 +167,80 @@ class TimeEntriesController < ApplicationController
                 .order(date: :desc, created_at: :desc)
                 .pick(:description)
     render json: { description: entry }
+  end
+
+  def duplicate
+    @date  = @entry.date.to_s
+    @tasks = current_user.tasks.active.ordered
+    original_position = @entry.position
+
+    @new_entry = current_user.time_entries.build(
+      task_id:          @entry.task_id,
+      date:             @date,
+      start_time:       @entry.start_time,
+      end_time:         @entry.end_time,
+      duration_minutes: @entry.duration_minutes,
+      description:      @entry.description
+    )
+
+    TimeEntry.transaction do
+      current_user.time_entries.where(date: @date).where("position > ?", original_position)
+                  .update_all("position = position + 1")
+      @new_entry.position = original_position + 1
+      raise ActiveRecord::Rollback unless @new_entry.save
+    end
+
+    if @new_entry.persisted?
+      respond_to do |format|
+        format.turbo_stream {
+          render turbo_stream: [
+            turbo_stream.after(dom_id(@entry),
+              partial: "time_entries/time_entry", locals: { entry: @new_entry }),
+            turbo_stream.replace("time-entries-total",
+              partial: "time_entries/total",
+              locals: { entries: current_user.time_entries.where(date: @date).includes(:task).order(position: :asc) }),
+            week_summary_stream(@date)
+          ]
+        }
+        format.html { redirect_to dashboard_path(date: @date) }
+      end
+    else
+      head :unprocessable_entity
+    end
+  end
+
+  def export
+    from = safe_parse_date(params[:from])
+    to   = safe_parse_date(params[:to])
+
+    if params[:from].present? && params[:to].present?
+      require "csv"
+      entries = current_user.time_entries
+                  .where(date: from.iso8601..to.iso8601)
+                  .includes(:task)
+                  .order(:date, :position)
+
+      csv_data = CSV.generate(headers: true) do |csv|
+        csv << [ "Datum", "Uppgift", "Beskrivning", "Start", "Slut", "Minuter" ]
+        entries.each do |e|
+          csv << [
+            e.date,
+            e.task.title,
+            e.description,
+            e.start_time&.strftime("%H:%M"),
+            e.end_time&.strftime("%H:%M"),
+            e.effective_duration_minutes
+          ]
+        end
+      end
+
+      send_data csv_data,
+                filename: "tidsrapport-#{from}-#{to}.csv",
+                type: "text/csv; charset=utf-8"
+    else
+      @from = (Date.today - 1.week).beginning_of_week(:monday).iso8601
+      @to   = (Date.today - 1.week).end_of_week(:monday).iso8601
+    end
   end
 
   def push_to_jira

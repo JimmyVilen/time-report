@@ -11,6 +11,8 @@
               class: "relative rounded-md px-3 py-2 text-sm font-medium transition-colors #{ request.path.start_with?('/app/tasks') ? 'nav-active-top text-accent' : 'text-foreground-muted hover:text-foreground' }" %>
         <%= link_to "Noteringar", notes_path,
               class: "relative rounded-md px-3 py-2 text-sm font-medium transition-colors #{ request.path.start_with?('/app/notes') ? 'nav-active-top text-accent' : 'text-foreground-muted hover:text-foreground' }" %>
+        <%= link_to "Exportera", export_time_entries_path,
+              class: "relative rounded-md px-3 py-2 text-sm font-medium transition-colors #{ request.path.start_with?('/app/time_entries/export') ? 'nav-active-top text-accent' : 'text-foreground-muted hover:text-foreground' }" %>
         <%= link_to "Profil", edit_profile_path,
               class: "relative rounded-md px-3 py-2 text-sm font-medium transition-colors #{ request.path.start_with?('/app/profile') ? 'nav-active-top text-accent' : 'text-foreground-muted hover:text-foreground' }" %>
       </div>
@@ -39,6 +41,8 @@
       <%= link_to "Tasks", tasks_path,
             class: "rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground" %>
       <%= link_to "Noteringar", notes_path,
+            class: "rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground" %>
+      <%= link_to "Exportera", export_time_entries_path,
             class: "rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground" %>
       <%= link_to "Profil", edit_profile_path,
             class: "rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground" %>

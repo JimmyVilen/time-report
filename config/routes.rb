@@ -28,9 +28,11 @@ Rails.application.routes.draw do
         post :reorder
         get  :weekly_summary
         get  :recent_description
+        get  :export
       end
       member do
         post :push_to_jira
+        post :duplicate
       end
     end
 

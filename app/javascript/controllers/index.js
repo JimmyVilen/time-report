@@ -26,3 +26,6 @@ application.register("note-panel", NotePanelController)
 
 import TaskSelectorController from "./task_selector_controller"
 application.register("task-selector", TaskSelectorController)
+
+import DateNavigationController from "./date_navigation_controller"
+application.register("date-navigation", DateNavigationController)
