@@ -32,7 +32,7 @@
           <div class="flex shrink-0 items-center gap-3 text-right">
 
             <%# Actions %>
-            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="flex items-center gap-1">
               <%# Push to Jira %>
               <% if entry.task.jira_url.present? %>
                 <% if entry.pushed? %>
@@ -45,8 +45,7 @@
                 <% elsif entry.can_push_to_jira? %>
                   <%= button_to push_to_jira_time_entry_path(entry), method: :post,
                         class: "rounded-lg p-1.5 text-foreground-muted hover:text-accent transition-colors",
-                        title: "Skicka till Jira",
-                        data: { turbo_confirm: false } do %>
+                        title: "Skicka till Jira" do %>
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                     </svg>

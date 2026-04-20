@@ -1,7 +1,7 @@
 module WeeklySummaryBuildable
   def build_weekly_days(week_start, week_end, entries)
     (week_start..week_end).map do |d|
-      day_entries = entries.select { |e| e.date == d }
+      day_entries = entries.select { |e| e.date == d.to_s }
       {
         date:          d.iso8601,
         day_name:      I18n.l(d, format: :day_name),
