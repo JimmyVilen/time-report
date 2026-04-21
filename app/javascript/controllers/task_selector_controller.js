@@ -8,11 +8,12 @@ export default class extends Controller {
     this._tasks = this.tasksValue
     this._selectedId = this.hiddenTarget.value || ""
     this._open = false
-    document.addEventListener("click", this._onOutsideClick.bind(this))
+    this._outsideClickHandler = this._onOutsideClick.bind(this)
+    document.addEventListener("click", this._outsideClickHandler)
   }
 
   disconnect() {
-    document.removeEventListener("click", this._onOutsideClick.bind(this))
+    document.removeEventListener("click", this._outsideClickHandler)
   }
 
   onFocus() {

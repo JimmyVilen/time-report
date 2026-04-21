@@ -21,12 +21,14 @@ export default class extends Controller {
   }
 
   connect() {
-    this.element.addEventListener("input", this.input.bind(this))
-    this.element.addEventListener("blur", this.blur.bind(this))
+    this._inputHandler = this.input.bind(this)
+    this._blurHandler  = this.blur.bind(this)
+    this.element.addEventListener("input", this._inputHandler)
+    this.element.addEventListener("blur",  this._blurHandler)
   }
 
   disconnect() {
-    this.element.removeEventListener("input", this.input.bind(this))
-    this.element.removeEventListener("blur", this.blur.bind(this))
+    this.element.removeEventListener("input", this._inputHandler)
+    this.element.removeEventListener("blur",  this._blurHandler)
   }
 }

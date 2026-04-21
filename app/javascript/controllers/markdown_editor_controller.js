@@ -16,13 +16,14 @@ export default class extends Controller {
       status: false
     })
 
-    this.element.addEventListener("keydown", this.handleKeydown.bind(this))
+    this._keydownHandler = this.handleKeydown.bind(this)
+    this.element.addEventListener("keydown", this._keydownHandler)
   }
 
   disconnect() {
     this.editor?.toTextArea()
     this.editor = null
-    this.element.removeEventListener("keydown", this.handleKeydown.bind(this))
+    this.element.removeEventListener("keydown", this._keydownHandler)
   }
 
   handleKeydown(event) {
