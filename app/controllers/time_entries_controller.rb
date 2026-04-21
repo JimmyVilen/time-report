@@ -65,7 +65,7 @@ class TimeEntriesController < ApplicationController
   end
 
   def update
-    @date  = @entry.date.iso8601
+    @date  = @entry.date.to_s
     @tasks = current_user.tasks.active.ordered
 
     begin
