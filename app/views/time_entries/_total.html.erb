@@ -1,8 +1,10 @@
 <% total = entries.sum { |e| e.effective_duration_minutes.to_i } %>
-<% if total > 0 %>
-  <div class="flex justify-end pt-1">
-    <span class="text-sm font-medium text-foreground-muted">
-      Totalt: <span class="text-foreground font-semibold"><%= format_duration(total) %></span>
-    </span>
-  </div>
-<% end %>
+<div id="time-entries-total">
+  <% if total > 0 %>
+    <div class="flex justify-end pt-1">
+      <span class="text-sm font-medium text-foreground-muted">
+        Totalt: <span class="text-foreground font-semibold"><%= format_duration(total) %></span>
+      </span>
+    </div>
+  <% end %>
+</div>
