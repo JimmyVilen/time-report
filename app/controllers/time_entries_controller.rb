@@ -20,8 +20,8 @@ class TimeEntriesController < ApplicationController
     begin
       resolved = TimeEntryResolver.resolve(
         date_str:         @date,
-        start_time:       parse_time_input(params.dig(:time_entry, :start_time), @date),
-        end_time:         parse_time_input(params.dig(:time_entry, :end_time), @date),
+        start_time:       parse_time_input(params.dig(:time_entry, :start_time), @date, "Starttid"),
+        end_time:         parse_time_input(params.dig(:time_entry, :end_time), @date, "Sluttid"),
         duration_minutes: DurationParser.parse(params.dig(:time_entry, :duration))
       )
       @entry.assign_attributes(resolved)
@@ -71,8 +71,8 @@ class TimeEntriesController < ApplicationController
     begin
       resolved = TimeEntryResolver.resolve(
         date_str:         @date,
-        start_time:       parse_time_input(params.dig(:time_entry, :start_time), @date),
-        end_time:         parse_time_input(params.dig(:time_entry, :end_time), @date),
+        start_time:       parse_time_input(params.dig(:time_entry, :start_time), @date, "Starttid"),
+        end_time:         parse_time_input(params.dig(:time_entry, :end_time), @date, "Sluttid"),
         duration_minutes: DurationParser.parse(params.dig(:time_entry, :duration))
       )
       attrs = resolved.merge(
@@ -310,11 +310,16 @@ class TimeEntriesController < ApplicationController
     @entry = current_user.time_entries.find(params[:id])
   end
 
-  def parse_time_input(value, date_str)
+  def parse_time_input(value, date_str, field_name)
     return nil if value.blank?
-    Time.parse("#{date_str}T#{value}:00")
-  rescue ArgumentError, TypeError
-    nil
+
+    unless value.match?(/\A([01]\d|2[0-3]):[0-5]\d\z/)
+      raise ArgumentError, "#{field_name} måste anges som HH:MM"
+    end
+
+    date = Date.iso8601(date_str)
+    hour, minute = value.split(":").map(&:to_i)
+    Time.zone.local(date.year, date.month, date.day, hour, minute)
   end
 
   def safe_parse_date(str)

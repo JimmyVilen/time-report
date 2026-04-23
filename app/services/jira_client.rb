@@ -14,9 +14,10 @@ class JiraClient
       summary:     data.dig("fields", "summary").to_s,
       description: extract_adf_text(data.dig("fields", "description"))
     }
-  rescue Faraday::ClientError => e
-    status = e.response&.dig(:status)
-    raise ArgumentError, jira_error_message(status, issue_key)
+  rescue JSON::ParserError
+    raise ArgumentError, "Ogiltigt svar från Jira."
+  rescue Faraday::Error, SocketError, SystemCallError => e
+    raise ArgumentError, jira_error_message(e.respond_to?(:response) ? e.response&.dig(:status) : nil, issue_key)
   end
 
   def create_worklog(issue_key:, time_spent_seconds:, started:, comment: nil)
@@ -31,9 +32,10 @@ class JiraClient
       req.body = body.to_json
     end
     JSON.parse(response.body)
-  rescue Faraday::ClientError => e
-    status = e.response&.dig(:status)
-    raise ArgumentError, jira_error_message(status, issue_key)
+  rescue JSON::ParserError
+    raise ArgumentError, "Ogiltigt svar från Jira."
+  rescue Faraday::Error, SocketError, SystemCallError => e
+    raise ArgumentError, jira_error_message(e.respond_to?(:response) ? e.response&.dig(:status) : nil, issue_key)
   end
 
   def self.format_worklog_date(time)
@@ -66,6 +68,8 @@ class JiraClient
     when 401 then "Jira-autentisering misslyckades. Kontrollera dina Jira-inställningar."
     when 403 then "Du har inte behörighet att logga tid på denna issue."
     when 404 then "Jira-issue #{issue_key} hittades inte eller så saknar du behörighet att se den."
+    when 500..599 then "Jira är inte tillgängligt just nu. Försök igen senare."
+    when nil then "Kunde inte ansluta till Jira. Kontrollera Jira-URL och nätverk."
     else "Jira API-fel: #{status}"
     end
   end

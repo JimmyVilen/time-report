@@ -8,20 +8,25 @@ class DurationParser
 
     total = 0
     matched = false
-    last_idx = 0
+    idx = 0
 
-    trimmed.scan(PAIR_RE) do |n_str, unit|
-      n = n_str.to_f
+    while idx < trimmed.length
+      if trimmed[idx].match?(/\s/)
+        idx += 1
+        next
+      end
+
+      match = PAIR_RE.match(trimmed, idx)
+      return nil unless match && match.begin(0) == idx
+
+      n = match[1].to_f
       return nil unless n.finite? && n >= 0
-      total += unit == "h" ? (n * 60).round : n.round
+      total += match[2].downcase == "h" ? (n * 60).round : n.round
       matched = true
-      last_idx = $~.end(0)
+      idx = match.end(0)
     end
 
     return nil unless matched
-
-    rest = trimmed[last_idx..].gsub(/\s+/, "")
-    return nil if rest.length > 0
     return nil unless total > 0
 
     total

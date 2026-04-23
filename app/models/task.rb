@@ -14,6 +14,7 @@ class Task < ApplicationRecord
   scope :unassigned,  -> { where(project_id: nil) }
 
   validates :title, presence: true
+  validate :project_belongs_to_user
 
   def destroy_or_archive!
     if time_entries.exists?
@@ -32,5 +33,12 @@ class Task < ApplicationRecord
     last.to_s.split("?").first.presence
   rescue URI::InvalidURIError
     nil
+  end
+
+  private
+
+  def project_belongs_to_user
+    return unless project && user_id
+    errors.add(:project, "must belong to this user") if project.user_id != user_id
   end
 end
