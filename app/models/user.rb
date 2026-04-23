@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   self.table_name = "users"
 
+  has_many :projects, dependent: :destroy
   has_many :tasks, dependent: :destroy
   has_many :time_entries, dependent: :destroy
   has_many :daily_notes, dependent: :destroy

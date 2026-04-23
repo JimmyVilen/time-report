@@ -16,6 +16,15 @@ Rails.application.routes.draw do
   scope "/app" do
     get "/",        to: "dashboard#index",       as: :dashboard
 
+    resources :projects do
+      member do
+        patch :archive
+        patch :unarchive
+        patch :add_task
+        patch :remove_task
+      end
+    end
+
     resources :tasks do
       member do
         patch :favorite

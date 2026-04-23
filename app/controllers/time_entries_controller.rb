@@ -217,14 +217,15 @@ class TimeEntriesController < ApplicationController
       require "csv"
       entries = current_user.time_entries
                   .where(date: from.iso8601..to.iso8601)
-                  .includes(:task)
+                  .includes(task: :project)
                   .order(:date, :position)
 
       csv_data = CSV.generate(headers: true) do |csv|
-        csv << [ "Datum", "Uppgift", "Beskrivning", "Start", "Slut", "Minuter" ]
+        csv << [ "Datum", "Projekt", "Uppgift", "Beskrivning", "Start", "Slut", "Minuter" ]
         entries.each do |e|
           csv << [
             e.date,
+            e.task.project&.name,
             e.task.title,
             e.description,
             e.start_time&.strftime("%H:%M"),

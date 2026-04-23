@@ -15,6 +15,10 @@
                       class: "text-xs font-medium text-accent hover:underline" %>
               <% end %>
               <span class="text-sm font-medium text-foreground truncate"><%= task.title %></span>
+              <% if task.project.present? %>
+                <%= link_to task.project.name, project_path(task.project),
+                      class: "rounded-full bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent hover:bg-accent/25 transition-colors shrink-0" %>
+              <% end %>
               <% if task.is_archived %>
                 <span class="rounded-full bg-foreground-muted/20 px-2 py-0.5 text-xs text-foreground-muted">Arkiverad</span>
               <% end %>

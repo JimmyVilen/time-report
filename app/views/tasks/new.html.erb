@@ -1,3 +1,3 @@
 <%= turbo_frame_tag "task-form-frame" do %>
-  <%= render "tasks/form", task: @task, action: :new %>
+  <%= render "tasks/form", task: @task, action: :new, projects: @projects %>
 <% end %>

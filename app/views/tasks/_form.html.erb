@@ -30,6 +30,17 @@
               data: { task_form_target: "jiraUrl" } %>
       </div>
 
+      <% available_projects = local_assigns.fetch(:projects, []) %>
+      <% if available_projects.any? %>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-foreground-muted">Projekt</label>
+          <%= f.select :project_id,
+                options_for_select([["— Inget projekt —", ""]] + available_projects.map { |p| [p.name, p.id] }, task.project_id),
+                { include_blank: false },
+                class: "w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent" %>
+        </div>
+      <% end %>
+
       <div>
         <label class="mb-1 block text-xs font-medium text-foreground-muted">Beskrivning</label>
         <%= f.text_area :description, rows: 3,

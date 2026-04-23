@@ -4,13 +4,14 @@ class TasksController < ApplicationController
   before_action :set_task, only: [:edit, :update, :destroy, :favorite, :restore]
 
   def index
-    @active_tasks   = current_user.tasks.active.ordered
-    @archived_tasks = current_user.tasks.archived.ordered
+    @active_tasks   = current_user.tasks.active.ordered.includes(:project)
+    @archived_tasks = current_user.tasks.archived.ordered.includes(:project)
     @new_task       = Task.new
   end
 
   def new
-    @task = Task.new
+    @task     = Task.new
+    @projects = current_user.projects.active.ordered
     respond_to do |format|
       format.html
       format.turbo_stream
@@ -33,6 +34,7 @@ class TasksController < ApplicationController
         format.html { redirect_to tasks_path }
       end
     else
+      @projects = current_user.projects.active.ordered
       respond_to do |format|
         format.json { render json: { error: @task.errors.full_messages.first }, status: :unprocessable_entity }
         format.turbo_stream { render :new, status: :unprocessable_entity }
@@ -42,6 +44,7 @@ class TasksController < ApplicationController
   end
 
   def edit
+    @projects = current_user.projects.active.ordered
     respond_to do |format|
       format.turbo_stream
       format.html
@@ -59,6 +62,7 @@ class TasksController < ApplicationController
         format.html { redirect_to tasks_path }
       end
     else
+      @projects = current_user.projects.active.ordered
       render :edit, status: :unprocessable_entity
     end
   end
@@ -128,6 +132,6 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:title, :description, :jira_url)
+    params.require(:task).permit(:title, :description, :jira_url, :project_id)
   end
 end

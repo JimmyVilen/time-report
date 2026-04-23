@@ -2,14 +2,16 @@ class Task < ApplicationRecord
   self.table_name = "tasks"
 
   belongs_to :user
+  belongs_to :project, optional: true
   has_many :time_entries, dependent: :destroy
 
   attribute :is_favorite, :boolean, default: false
   attribute :is_archived, :boolean, default: false
 
-  scope :active,   -> { where(is_archived: false) }
-  scope :archived, -> { where(is_archived: true) }
-  scope :ordered,  -> { order(is_favorite: :desc, last_used_at: :desc, created_at: :desc) }
+  scope :active,      -> { where(is_archived: false) }
+  scope :archived,    -> { where(is_archived: true) }
+  scope :ordered,     -> { order(is_favorite: :desc, last_used_at: :desc, created_at: :desc) }
+  scope :unassigned,  -> { where(project_id: nil) }
 
   validates :title, presence: true
 
