@@ -29,3 +29,5 @@ end
 group :development do
   gem "web-console"
 end
+
+gem "psych", ">= 4.0.0"

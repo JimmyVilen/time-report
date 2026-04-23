@@ -37,6 +37,7 @@ Rails.application.routes.draw do
     end
 
     resources :daily_notes, param: :date, only: [:show, :create, :update]
+    get    "/notes/export", to: "notes#export",   as: :export_notes
     get    "/notes", to: "notes#index",          as: :notes
     resource :profile, only: [:edit, :update]
     get    "/jira/fetch_details", to: "tasks#fetch_jira_details", as: :jira_fetch_details
