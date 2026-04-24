@@ -1,7 +1,7 @@
 module ApplicationHelper
   def render_markdown(text)
     return "" if text.blank?
-    renderer = Redcarpet::Render::HTML.new(filter_html: true, safe_links_only: true)
+    renderer = Redcarpet::Render::HTML.new(filter_html: true, safe_links_only: true, hard_wrap: true)
     md = Redcarpet::Markdown.new(renderer,
       autolink: true,
       tables: true,

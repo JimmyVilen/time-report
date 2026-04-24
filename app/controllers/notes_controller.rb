@@ -1,9 +1,21 @@
 class NotesController < ApplicationController
+  NOTES_PER_PAGE = 10
+
   def index
     @query = params[:q].to_s.strip
     scope  = current_user.daily_notes.order(date: :desc)
-    scope  = scope.where("content LIKE ?", "%#{@query}%") if @query.present?
-    @notes = scope
+    if @query.present?
+      escaped_query = DailyNote.sanitize_sql_like(@query)
+      scope = scope.where("content LIKE ? ESCAPE '\\'", "%#{escaped_query}%")
+    end
+
+    @total_count = scope.count
+    @total_pages = [ (@total_count.to_f / NOTES_PER_PAGE).ceil, 1 ].max
+    @page = params[:page].to_i
+    @page = 1 if @page < 1
+    @page = @total_pages if @page > @total_pages
+    @per_page = NOTES_PER_PAGE
+    @notes = scope.limit(@per_page).offset((@page - 1) * @per_page)
   end
 
   def export
