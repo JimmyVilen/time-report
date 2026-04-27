@@ -39,7 +39,7 @@ export default class extends Controller {
     }
 
     try {
-      const url = new URL(this.jiraFetchUrlValue)
+      const url = new URL(this.jiraFetchUrlValue, window.location.origin)
       url.searchParams.set("jira_url", jiraUrl)
       const resp = await fetch(url.toString(), {
         headers: { "Accept": "application/json" }

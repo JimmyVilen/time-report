@@ -125,23 +125,30 @@ export default class extends Controller {
     await this._create({ title })
   }
 
-  async createFromJira() {
+  async createFromJira(event) {
     const jiraUrl = this.inputTarget.value.trim()
     if (!jiraUrl) return
 
-    let title = jiraUrl
-    let description = ""
+    const btn = event?.currentTarget
+    if (btn) btn.disabled = true
 
     try {
-      const url = new URL(this.jiraFetchUrlValue)
+      const url = new URL(this.jiraFetchUrlValue, window.location.origin)
       url.searchParams.set("jira_url", jiraUrl)
-      const resp = await fetch(url, { headers: { Accept: "application/json" } })
+      const resp = await fetch(url.toString(), { headers: { Accept: "application/json" } })
       const data = await resp.json()
-      if (resp.ok && data.summary) title = data.summary
-      if (resp.ok && data.description) description = data.description
-    } catch (_) {}
+      if (!resp.ok) throw new Error(data.error || "Okänt fel")
 
-    await this._create({ title, description, jira_url: jiraUrl })
+      const title = (data.summary || "").trim()
+      if (!title) throw new Error("Jira-svaret saknar titel.")
+
+      const description = data.description || ""
+
+      await this._create({ title, description, jira_url: jiraUrl })
+    } catch (err) {
+      alert("Kunde inte hämta Jira-task: " + err.message)
+      if (btn) btn.disabled = false
+    }
   }
 
   async _create(attrs) {
