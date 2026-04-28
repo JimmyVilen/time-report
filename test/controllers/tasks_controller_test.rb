@@ -1,6 +1,66 @@
 require "test_helper"
 
 class TasksControllerTest < ActionDispatch::IntegrationTest
+  test "index filters active and archived tasks by query" do
+    user = create_user(email: "task-search@example.com")
+    user.tasks.create!(title: "Needle active task", description: "Visible match")
+    user.tasks.create!(title: "Needle archived task", description: "Visible match", is_archived: true)
+    user.tasks.create!(title: "Unrelated task", description: "Hidden")
+
+    sign_in_as(user)
+
+    get tasks_path(q: "needle")
+
+    assert_response :success
+    assert_select "span", text: "Needle active task"
+    assert_select "span", text: "Needle archived task"
+    assert_select "span", text: "Unrelated task", count: 0
+  end
+
+  test "index filters tasks by project name" do
+    user = create_user(email: "task-project-search@example.com")
+    project = user.projects.create!(name: "Client Portal")
+    user.tasks.create!(title: "Project work", project: project)
+    user.tasks.create!(title: "Internal work")
+
+    sign_in_as(user)
+
+    get tasks_path(q: "portal")
+
+    assert_response :success
+    assert_select "span", text: "Project work"
+    assert_select "span", text: "Internal work", count: 0
+  end
+
+  test "index search does not show other users tasks" do
+    user = create_user(email: "task-search-owner@example.com")
+    other = create_user(email: "task-search-other@example.com")
+    user.tasks.create!(title: "Needle owned task")
+    other.tasks.create!(title: "Needle private task")
+
+    sign_in_as(user)
+
+    get tasks_path(q: "needle")
+
+    assert_response :success
+    assert_select "span", text: "Needle owned task"
+    assert_select "span", text: "Needle private task", count: 0
+  end
+
+  test "index escapes sql wildcards in query" do
+    user = create_user(email: "task-wildcards@example.com")
+    user.tasks.create!(title: "Literal percent % marker")
+    user.tasks.create!(title: "No matching marker")
+
+    sign_in_as(user)
+
+    get tasks_path(q: "%")
+
+    assert_response :success
+    assert_select "span", text: "Literal percent % marker"
+    assert_select "span", text: "No matching marker", count: 0
+  end
+
   test "rejects assigning a task to another users project" do
     owner = create_user(email: "project-owner@example.com")
     other = create_user(email: "task-owner@example.com")

@@ -4,8 +4,23 @@ class TasksController < ApplicationController
   before_action :set_task, only: [:edit, :update, :destroy, :favorite, :restore]
 
   def index
-    @active_tasks   = current_user.tasks.active.ordered.includes(:project)
-    @archived_tasks = current_user.tasks.archived.ordered.includes(:project)
+    @query = params[:q].to_s.strip
+    tasks = current_user.tasks.left_outer_joins(:project)
+
+    if @query.present?
+      escaped_query = Task.sanitize_sql_like(@query)
+      search_sql = [
+        "tasks.title LIKE :query ESCAPE '\\'",
+        "tasks.description LIKE :query ESCAPE '\\'",
+        "tasks.jira_url LIKE :query ESCAPE '\\'",
+        "projects.name LIKE :query ESCAPE '\\'"
+      ].join(" OR ")
+
+      tasks = tasks.where(search_sql, query: "%#{escaped_query}%")
+    end
+
+    @active_tasks   = tasks.active.ordered.includes(:project)
+    @archived_tasks = tasks.archived.ordered.includes(:project)
     @new_task       = Task.new
   end
 
