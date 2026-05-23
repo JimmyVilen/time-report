@@ -8,7 +8,7 @@ COPY src/Frontend/ ./
 RUN npm run build -- --outDir /wwwroot
 
 # Stage 2: Build backend
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS backend-build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS backend-build
 WORKDIR /app
 COPY TimeReport.slnx ./
 COPY src/Backend/TimeReport.Api/TimeReport.Api.csproj src/Backend/TimeReport.Api/
@@ -19,7 +19,7 @@ RUN dotnet publish src/Backend/TimeReport.Api/TimeReport.Api.csproj \
     -c Release -o /publish --no-restore
 
 # Stage 3: Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 RUN adduser --disabled-password --gecos "" appuser && chown appuser /app
 USER appuser
