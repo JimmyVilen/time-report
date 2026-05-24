@@ -29,29 +29,29 @@ public class JiraService(IHttpClientFactory factory)
     {
         var client = CreateClient(jiraBaseUrl, jiraEmail, jiraApiToken);
 
-        var body = new
+        var bodyNode = new JsonObject
         {
-            timeSpentSeconds,
-            started = FormatWorklogDate(started),
-            comment = new
-            {
-                type = "doc",
-                version = 1,
-                content = new[]
-                {
-                    new
-                    {
-                        type = "paragraph",
-                        content = new[]
-                        {
-                            new { type = "text", text = comment ?? "" }
-                        }
-                    }
-                }
-            }
+            ["timeSpentSeconds"] = timeSpentSeconds,
+            ["started"] = FormatWorklogDate(started)
         };
 
-        var json = JsonSerializer.Serialize(body);
+        if (!string.IsNullOrEmpty(comment))
+        {
+            bodyNode["comment"] = new JsonObject
+            {
+                ["type"] = "doc",
+                ["version"] = 1,
+                ["content"] = new JsonArray(
+                    new JsonObject
+                    {
+                        ["type"] = "paragraph",
+                        ["content"] = new JsonArray(
+                            new JsonObject { ["type"] = "text", ["text"] = comment })
+                    })
+            };
+        }
+
+        var json = bodyNode.ToJsonString();
         var content = new StringContent(json, Encoding.UTF8, "application/json");
         var response = await client.PostAsync($"/rest/api/3/issue/{issueKey}/worklog", content);
         await EnsureSuccess(response, issueKey);

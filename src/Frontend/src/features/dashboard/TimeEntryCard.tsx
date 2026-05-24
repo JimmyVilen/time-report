@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -31,9 +32,14 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
     onSuccess: invalidate,
   })
 
+  const [pushError, setPushError] = useState<string | null>(null)
+
   const pushMutation = useMutation({
     mutationFn: () => pushToJira(entry.id),
-    onSuccess: invalidate,
+    onSuccess: () => { setPushError(null); invalidate() },
+    onError: (err: unknown) => {
+      setPushError(err instanceof Error ? err.message : 'Kunde inte skicka till Jira')
+    },
   })
 
   const style = {
@@ -107,9 +113,20 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
                   ) : (
                     <button
                       onClick={() => pushMutation.mutate()}
-                      disabled={pushMutation.isPending}
-                      className="rounded-lg p-1.5 text-[var(--foreground-muted)] hover:text-[var(--accent)] transition-colors disabled:opacity-50"
-                      title="Skicka till Jira"
+                      disabled={
+                        pushMutation.isPending ||
+                        entry.effectiveDurationMinutes <= 0 ||
+                        !entry.startTime ||
+                        !entry.endTime
+                      }
+                      className="rounded-lg p-1.5 text-[var(--foreground-muted)] hover:text-[var(--accent)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={
+                        entry.effectiveDurationMinutes <= 0
+                          ? 'Ingen tid registrerad'
+                          : !entry.startTime || !entry.endTime
+                            ? 'Start- och sluttid krävs för att skicka till Jira'
+                            : 'Skicka till Jira'
+                      }
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -169,6 +186,9 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
           </div>
         </div>
       </div>
+      {pushError && (
+        <p className="px-4 pb-2 text-xs text-[var(--danger)]">{pushError}</p>
+      )}
     </div>
   )
 }
