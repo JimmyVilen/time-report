@@ -1,9 +1,10 @@
 services:
   app:
     build: .
+    image: time-report:latest
     ports:
       - "8080:8080"
     volumes:
-      - ./data:/app/data
+      - C:/Users/jimmy.vilen/Dropbox/db:/app/data
     environment:
-      ConnectionStrings__Default: "Data Source=/app/data/timereport.db"
+      ConnectionStrings__Default: "Data Source=/app/data/local.db"

@@ -16,12 +16,12 @@ RUN dotnet restore Backend/TimeReport.Api/TimeReport.Api.csproj
 COPY Backend/TimeReport.Api/ Backend/TimeReport.Api/
 COPY --from=frontend-build /wwwroot Backend/TimeReport.Api/wwwroot/
 RUN dotnet publish Backend/TimeReport.Api/TimeReport.Api.csproj \
-    -c Release -o /publish --no-restore
+    -c Release -o /publish
 
 # Stage 3: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
-RUN adduser --disabled-password --gecos "" appuser && chown appuser /app
+RUN useradd --no-create-home appuser && chown appuser /app
 USER appuser
 COPY --from=backend-build /publish ./
 EXPOSE 8080
