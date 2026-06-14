@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import type { TimeEntry } from '../../api/timeEntries'
+import { MarkdownRenderer } from '../../components/MarkdownRenderer'
 import { deleteTimeEntry, duplicateTimeEntry, pushToJira } from '../../api/timeEntries'
 import { formatMinutes } from '../../lib/durationParser'
 
@@ -89,9 +90,9 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
                 </span>
               </div>
               {entry.description && (
-                <p className="mt-0.5 break-words text-sm text-[var(--foreground-muted)] line-clamp-2">
-                  {entry.description}
-                </p>
+                <div className="mt-0.5 text-sm text-[var(--foreground-muted)] line-clamp-3 [&_.prose-content]:text-sm [&_.prose-content]:text-[var(--foreground-muted)] [&_.prose-content_p]:mb-0 [&_.prose-content_h1]:text-sm [&_.prose-content_h2]:text-sm [&_.prose-content_h3]:text-sm">
+                  <MarkdownRenderer content={entry.description} />
+                </div>
               )}
             </div>
 

@@ -6,6 +6,7 @@ import type { TimeEntry } from '../../api/timeEntries'
 import { Input } from '../../components/Input'
 import { Button } from '../../components/Button'
 import { parseDuration, formatMinutes } from '../../lib/durationParser'
+import { LexicalMarkdownEditor } from '../../components/LexicalMarkdownEditor'
 
 interface Props {
   date: string
@@ -37,6 +38,7 @@ export function TimeEntryForm({ date, editEntry, onClose }: Props) {
   const [taskSearch, setTaskSearch] = useState(editEntry ? taskLabel(editEntry) : '')
   const [showDropdown, setShowDropdown] = useState(false)
   const [description, setDescription] = useState(editEntry?.description ?? '')
+  const [editorKey, setEditorKey] = useState(0)
   const [startTime, setStartTime] = useState(editEntry?.startTime ?? '')
   const [endTime, setEndTime] = useState(editEntry?.endTime ?? '')
   const [durationStr, setDurationStr] = useState(
@@ -87,6 +89,7 @@ export function TimeEntryForm({ date, editEntry, onClose }: Props) {
     if (recentDescQuery.data?.description && !editEntry) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setDescription(recentDescQuery.data.description)
+      setEditorKey(k => k + 1)
     }
   }, [recentDescQuery.data, editEntry])
 
@@ -283,10 +286,11 @@ export function TimeEntryForm({ date, editEntry, onClose }: Props) {
           />
         </div>
 
-        <Input
+        <LexicalMarkdownEditor
+          key={`${editEntry?.id ?? 'new'}-${editorKey}`}
           label="Beskrivning"
           value={description}
-          onChange={e => setDescription(e.target.value)}
+          onChange={setDescription}
           placeholder="Valfri beskrivning"
         />
 
