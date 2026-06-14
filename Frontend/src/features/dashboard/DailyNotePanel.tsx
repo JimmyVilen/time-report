@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getDailyNote, upsertDailyNote } from '../../api/dailyNotes'
 import { Button } from '../../components/Button'
+import { LexicalMarkdownEditor } from '../../components/LexicalMarkdownEditor'
 
 interface Props {
   date: string
@@ -51,13 +52,10 @@ export function DailyNotePanel({ date }: Props) {
       {isOpen && (
         <div className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-card)] p-4">
           <div className="flex flex-col gap-3">
-            <textarea
+            <LexicalMarkdownEditor
               value={content}
-              onChange={e => setContent(e.target.value)}
-              rows={6}
-              autoFocus
-              className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] text-sm resize-none focus:outline-none focus:ring-1 focus:ring-[var(--accent)] focus:border-[var(--accent)] placeholder-[var(--foreground-muted)]"
-              placeholder="Skriv din dagliga notering här... (Markdown stöds)"
+              onChange={setContent}
+              placeholder="Skriv din dagliga notering här..."
             />
             <div className="flex justify-end gap-2">
               <button

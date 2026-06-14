@@ -114,3 +114,47 @@ input[type="time"]::-webkit-datetime-edit-ampm-field { display: none; }
   color: var(--foreground-muted);
   margin-bottom: 0.75rem;
 }
+
+/* Lexical WYSIWYG editor */
+.lexical-editor-wrapper .editor-content {
+  min-height: 5rem;
+  max-height: 12rem;
+  overflow-y: auto;
+  outline: none;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--foreground);
+}
+.lexical-editor-wrapper .editor-placeholder {
+  position: absolute;
+  top: 4rem;
+  left: 0.75rem;
+  color: var(--foreground-muted);
+  font-size: 0.875rem;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Lexical theme classes */
+.lexical-bold { font-weight: 700; }
+.lexical-italic { font-style: italic; }
+.lexical-underline { text-decoration: underline; }
+.lexical-code {
+  font-family: monospace;
+  background: var(--background-elevated);
+  padding: 0.1em 0.3em;
+  border-radius: 0.25em;
+  font-size: 0.875em;
+}
+.lexical-h1 { font-size: 1em; font-weight: 600; margin-top: 0.5rem; }
+.lexical-h2 { font-size: 0.875em; font-weight: 600; margin-top: 0.5rem; }
+.lexical-h3 { font-size: 0.875em; font-weight: 500; margin-top: 0.5rem; }
+.lexical-ul { list-style: disc; padding-left: 1.25rem; }
+.lexical-ol { list-style: decimal; padding-left: 1.25rem; }
+.lexical-li { margin-bottom: 0.125rem; }
+.lexical-quote {
+  border-left: 2px solid var(--border);
+  padding-left: 0.75rem;
+  color: var(--foreground-muted);
+  font-style: italic;
+}
