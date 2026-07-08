@@ -315,7 +315,7 @@ export function TimeEntryForm({ date, editEntry, onClose }: Props) {
           availableTags={allTags}
           onAdd={tag => setSelectedTags(prev => [...prev, tag])}
           onRemove={id => setSelectedTags(prev => prev.filter(t => t.id !== id))}
-          onCreateAndAdd={async (name) => { await createTagMutation.mutateAsync(name) }}
+          onCreateAndAdd={async (name) => { try { await createTagMutation.mutateAsync(name) } catch {} }}
           creating={createTagMutation.isPending}
         />
 

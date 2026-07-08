@@ -25,7 +25,7 @@ public class TagsController(AppDbContext db) : ApiControllerBase
         var name = req.Name.Trim();
         if (string.IsNullOrEmpty(name))
             return BadRequest(new { error = "Tag name is required" });
-        if (await db.Tags.AnyAsync(t => t.UserId == CurrentUserId && t.Name == name))
+        if (await db.Tags.AnyAsync(t => t.UserId == CurrentUserId && t.Name.ToLower() == name.ToLower()))
             return BadRequest(new { error = "A tag with that name already exists" });
 
         var tag = new Tag
@@ -46,7 +46,10 @@ public class TagsController(AppDbContext db) : ApiControllerBase
     {
         var tag = await db.Tags.FirstOrDefaultAsync(t => t.Id == id && t.UserId == CurrentUserId);
         if (tag is null) return NotFound();
-        tag.Name = req.Name.Trim();
+        var name = req.Name.Trim();
+        if (string.IsNullOrEmpty(name))
+            return BadRequest(new { error = "Tag name is required" });
+        tag.Name = name;
         tag.Color = req.Color?.Trim();
         tag.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
@@ -60,7 +63,7 @@ public class TagsController(AppDbContext db) : ApiControllerBase
         if (tag is null) return NotFound();
         db.Tags.Remove(tag);
         await db.SaveChangesAsync();
-        return Ok();
+        return NoContent();
     }
 
     private static object ToDto(Tag t) => new { t.Id, t.Name, t.Color, t.CreatedAt, t.UpdatedAt };

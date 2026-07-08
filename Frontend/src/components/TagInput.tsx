@@ -3,11 +3,15 @@ import type { Tag } from '../api/tags'
 
 export function tagColorStyle(color: string | null): React.CSSProperties {
   if (!color) return {}
-  return {
-    backgroundColor: color + '20',
-    color: color,
-    border: `1px solid ${color}80`,
+  // Alpha suffix only works for 6-digit hex colors (#rrggbb)
+  if (/^#[0-9a-fA-F]{6}$/.test(color)) {
+    return {
+      backgroundColor: color + '20',
+      color: color,
+      border: `1px solid ${color}80`,
+    }
   }
+  return { color }
 }
 
 export const tagDefaultClass =
@@ -82,7 +86,7 @@ export function TagInput({ label, selectedTags, availableTags, onAdd, onRemove, 
                 key={tag.id}
                 type="button"
                 className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--background-card-hover)] text-[var(--foreground)] flex items-center gap-2"
-                onMouseDown={() => { onAdd(tag); setInputValue('') }}
+                onMouseDown={() => { onAdd(tag); setInputValue(''); setOpen(false) }}
               >
                 <span
                   style={tagColorStyle(tag.color)}

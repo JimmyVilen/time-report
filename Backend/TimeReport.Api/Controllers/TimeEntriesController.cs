@@ -294,7 +294,6 @@ public class TimeEntriesController(
     {
         var entry = await db.TimeEntries
             .Include(e => e.Task)
-            .Include(e => e.Tags)
             .FirstOrDefaultAsync(e => e.Id == id && e.UserId == CurrentUserId);
         if (entry is null) return NotFound();
 
