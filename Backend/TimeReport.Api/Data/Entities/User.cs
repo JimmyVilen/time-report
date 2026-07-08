@@ -20,4 +20,5 @@ public class User
     public ICollection<TimeEntry> TimeEntries { get; set; } = [];
     public ICollection<DailyNote> DailyNotes { get; set; } = [];
     public ICollection<PlannerBlock> PlannerBlocks { get; set; } = [];
+    public ICollection<Tag> Tags { get; set; } = [];
 }

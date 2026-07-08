@@ -1,4 +1,5 @@
 import { api } from './client'
+import type { Tag } from './tags'
 
 export interface TimeEntry {
   id: number
@@ -21,6 +22,7 @@ export interface TimeEntry {
   isPushed: boolean
   createdAt: string
   updatedAt: string
+  tags: Tag[]
 }
 
 export interface WeekDay {
@@ -48,6 +50,7 @@ export const createTimeEntry = (data: {
   endTime?: string
   durationMinutes?: number
   durationString?: string
+  tagIds?: number[]
 }) => api.post<TimeEntry>('/api/time-entries', data)
 
 export const updateTimeEntry = (id: number, data: {
@@ -59,6 +62,7 @@ export const updateTimeEntry = (id: number, data: {
   durationMinutes?: number | null
   durationString?: string | null
   deleteJiraWorklog?: boolean
+  tagIds?: number[] | null
 }) => api.put<TimeEntry>(`/api/time-entries/${id}`, data)
 
 export const deleteTimeEntry = (id: number) => api.delete<void>(`/api/time-entries/${id}`)
