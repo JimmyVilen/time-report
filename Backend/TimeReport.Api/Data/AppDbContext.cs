@@ -12,10 +12,21 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<TimeEntry> TimeEntries => Set<TimeEntry>();
     public DbSet<DailyNote> DailyNotes => Set<DailyNote>();
     public DbSet<PlannerBlock> PlannerBlocks => Set<PlannerBlock>();
+    public DbSet<Tag> Tags => Set<Tag>();
+    public DbSet<TimeEntryTag> TimeEntryTags => Set<TimeEntryTag>();
 
     protected override void OnModelCreating(ModelBuilder m)
     {
         base.OnModelCreating(m);
+
+        // Configure many-to-many BEFORE snake_case loop so TimeEntryTag is registered in time
+        m.Entity<TimeEntry>()
+            .HasMany(e => e.Tags)
+            .WithMany(t => t.TimeEntries)
+            .UsingEntity<TimeEntryTag>(
+                j => j.HasOne(x => x.Tag).WithMany().HasForeignKey(x => x.TagId).OnDelete(DeleteBehavior.Cascade),
+                j => j.HasOne(x => x.TimeEntry).WithMany().HasForeignKey(x => x.TimeEntryId).OnDelete(DeleteBehavior.Cascade),
+                j => j.HasKey(x => new { x.TimeEntryId, x.TagId }));
 
         // Apply snake_case naming to all tables and columns (matches Rails schema)
         foreach (var entity in m.Model.GetEntityTypes())
@@ -108,6 +119,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         m.Entity<PlannerBlock>()
             .HasOne(b => b.User)
             .WithMany(u => u.PlannerBlocks)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Tags
+        m.Entity<Tag>()
+            .HasIndex(t => new { t.UserId, t.Name })
+            .IsUnique()
+            .HasDatabaseName("tags_user_id_name_key");
+
+        m.Entity<Tag>()
+            .HasOne(t => t.User)
+            .WithMany(u => u.Tags)
             .OnDelete(DeleteBehavior.Cascade);
     }
 

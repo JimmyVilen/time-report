@@ -19,6 +19,7 @@ public class TimeEntry
 
     public User User { get; set; } = null!;
     public AppTask Task { get; set; } = null!;
+    public ICollection<Tag> Tags { get; set; } = [];
 
     public int EffectiveDurationMinutes =>
         StartTime.HasValue && EndTime.HasValue

@@ -6,6 +6,7 @@ import type { TimeEntry } from '../../api/timeEntries'
 import { MarkdownRenderer } from '../../components/MarkdownRenderer'
 import { deleteTimeEntry, duplicateTimeEntry, pushToJira } from '../../api/timeEntries'
 import { formatMinutes } from '../../lib/durationParser'
+import { tagColorStyle, tagDefaultClass } from '../../components/TagInput'
 
 interface Props {
   entry: TimeEntry
@@ -92,6 +93,19 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
               {entry.description && (
                 <div className="mt-0.5 text-sm text-[var(--foreground-muted)] line-clamp-3 [&_.prose-content]:text-sm [&_.prose-content]:text-[var(--foreground-muted)] [&_.prose-content_p]:mb-0 [&_.prose-content_h1]:text-sm [&_.prose-content_h2]:text-sm [&_.prose-content_h3]:text-sm">
                   <MarkdownRenderer content={entry.description} />
+                </div>
+              )}
+              {entry.tags.length > 0 && (
+                <div className="mt-1.5 flex flex-wrap gap-1">
+                  {entry.tags.map(tag => (
+                    <span
+                      key={tag.id}
+                      style={tagColorStyle(tag.color)}
+                      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${!tag.color ? tagDefaultClass : ''}`}
+                    >
+                      {tag.name}
+                    </span>
+                  ))}
                 </div>
               )}
             </div>

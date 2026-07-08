@@ -24,6 +24,7 @@ public class TimeEntriesController(
             .Where(e => e.UserId == CurrentUserId && e.Date == date)
             .AsNoTracking()
             .Include(e => e.Task).ThenInclude(t => t.Project)
+            .Include(e => e.Tags)
             .OrderBy(e => e.Position)
             .ToListAsync();
 
@@ -69,6 +70,14 @@ public class TimeEntriesController(
         };
         db.TimeEntries.Add(entry);
 
+        if (req.TagIds is { Count: > 0 })
+        {
+            var tags = await db.Tags
+                .Where(t => req.TagIds.Contains(t.Id) && t.UserId == CurrentUserId)
+                .ToListAsync();
+            foreach (var tag in tags) entry.Tags.Add(tag);
+        }
+
         task.LastUsedAt = DateTime.UtcNow;
         task.UpdatedAt = DateTime.UtcNow;
 
@@ -77,6 +86,7 @@ public class TimeEntriesController(
 
         await db.Entry(entry).Reference(e => e.Task).LoadAsync();
         await db.Entry(entry.Task).Reference(t => t.Project).LoadAsync();
+        await db.Entry(entry).Collection(e => e.Tags).LoadAsync();
         return Ok(ToDto(entry));
     }
 
@@ -85,6 +95,7 @@ public class TimeEntriesController(
     {
         var entry = await db.TimeEntries
             .Include(e => e.Task)
+            .Include(e => e.Tags)
             .FirstOrDefaultAsync(e => e.Id == id && e.UserId == CurrentUserId);
         if (entry is null) return NotFound();
 
@@ -132,6 +143,18 @@ public class TimeEntriesController(
         entry.DurationMinutes = resolved.DurationMinutes;
         entry.UpdatedAt = DateTime.UtcNow;
 
+        if (req.TagIds is not null)
+        {
+            entry.Tags.Clear();
+            if (req.TagIds.Count > 0)
+            {
+                var tags = await db.Tags
+                    .Where(t => req.TagIds.Contains(t.Id) && t.UserId == CurrentUserId)
+                    .ToListAsync();
+                foreach (var tag in tags) entry.Tags.Add(tag);
+            }
+        }
+
         await db.SaveChangesAsync();
         await db.Entry(entry).Reference(e => e.Task).LoadAsync();
         await db.Entry(entry.Task).Reference(t => t.Project).LoadAsync();
@@ -153,6 +176,7 @@ public class TimeEntriesController(
     {
         var original = await db.TimeEntries
             .Include(e => e.Task).ThenInclude(t => t.Project)
+            .Include(e => e.Tags)
             .FirstOrDefaultAsync(e => e.Id == id && e.UserId == CurrentUserId);
         if (original is null) return NotFound();
 
@@ -174,12 +198,14 @@ public class TimeEntriesController(
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+        foreach (var tag in original.Tags) copy.Tags.Add(tag);
         db.TimeEntries.Add(copy);
         await db.SaveChangesAsync();
         await tx.CommitAsync();
 
         await db.Entry(copy).Reference(e => e.Task).LoadAsync();
         await db.Entry(copy.Task).Reference(t => t.Project).LoadAsync();
+        await db.Entry(copy).Collection(e => e.Tags).LoadAsync();
         return Ok(ToDto(copy));
     }
 
@@ -268,6 +294,7 @@ public class TimeEntriesController(
     {
         var entry = await db.TimeEntries
             .Include(e => e.Task)
+            .Include(e => e.Tags)
             .FirstOrDefaultAsync(e => e.Id == id && e.UserId == CurrentUserId);
         if (entry is null) return NotFound();
 
@@ -315,6 +342,7 @@ public class TimeEntriesController(
             .Where(e => e.UserId == CurrentUserId)
             .AsNoTracking()
             .Include(e => e.Task).ThenInclude(t => t.Project)
+            .Include(e => e.Tags)
             .AsQueryable();
 
         if (!string.IsNullOrEmpty(from))
@@ -325,13 +353,14 @@ public class TimeEntriesController(
         var entries = await query.OrderBy(e => e.Date).ThenBy(e => e.Position).ToListAsync();
 
         var csv = new StringBuilder();
-        csv.AppendLine("Datum,Projekt,Uppgift,Beskrivning,Start,Slut,Minuter");
+        csv.AppendLine("Datum,Projekt,Uppgift,Beskrivning,Start,Slut,Minuter,Taggar");
         foreach (var e in entries)
         {
             var project = e.Task.Project?.Name ?? "";
             var start = e.StartTime?.ToString("HH:mm") ?? "";
             var end = e.EndTime?.ToString("HH:mm") ?? "";
-            csv.AppendLine($"{e.Date},{CsvEscape(project)},{CsvEscape(e.Task.Title)},{CsvEscape(e.Description ?? "")},{start},{end},{e.EffectiveDurationMinutes}");
+            var tags = string.Join("|", e.Tags.OrderBy(t => t.Name).Select(t => t.Name));
+            csv.AppendLine($"{e.Date},{CsvEscape(project)},{CsvEscape(e.Task.Title)},{CsvEscape(e.Description ?? "")},{start},{end},{e.EffectiveDurationMinutes},{CsvEscape(tags)}");
         }
 
         var bytes = Encoding.UTF8.GetBytes(csv.ToString());
@@ -371,7 +400,8 @@ public class TimeEntriesController(
         e.PushedToSystem,
         e.PushedAt,
         IsPushed = e.IsPushed,
-        e.CreatedAt, e.UpdatedAt
+        e.CreatedAt, e.UpdatedAt,
+        Tags = e.Tags.Select(t => new { t.Id, t.Name, t.Color }).ToList()
     };
 }
 
@@ -382,7 +412,8 @@ public record TimeEntryRequest(
     string? StartTime,
     string? EndTime,
     int? DurationMinutes,
-    string? DurationString);
+    string? DurationString,
+    List<int>? TagIds = null);
 
 public record TimeEntryUpdateRequest(
     int? TaskId,
@@ -392,6 +423,7 @@ public record TimeEntryUpdateRequest(
     string? EndTime,
     int? DurationMinutes,
     string? DurationString,
-    bool DeleteJiraWorklog = false);
+    bool DeleteJiraWorklog = false,
+    List<int>? TagIds = null);
 
 public record ReorderItem(int Id, int Position);

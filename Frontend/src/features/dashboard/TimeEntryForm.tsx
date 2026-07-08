@@ -3,8 +3,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getTasks, createTask, fetchJiraDetails } from '../../api/tasks'
 import { createTimeEntry, updateTimeEntry, getRecentDescription } from '../../api/timeEntries'
 import type { TimeEntry } from '../../api/timeEntries'
+import { getTags, createTag } from '../../api/tags'
+import type { Tag } from '../../api/tags'
 import { Input } from '../../components/Input'
 import { Button } from '../../components/Button'
+import { TagInput } from '../../components/TagInput'
 import { parseDuration, formatMinutes } from '../../lib/durationParser'
 import { LexicalMarkdownEditor } from '../../components/LexicalMarkdownEditor'
 
@@ -32,8 +35,10 @@ function taskLabel(t: { jiraKey?: string | null; title?: string; taskJiraKey?: s
 export function TimeEntryForm({ date, editEntry, onClose }: Props) {
   const qc = useQueryClient()
   const { data: tasks = [] } = useQuery({ queryKey: ['tasks'], queryFn: () => getTasks() })
+  const { data: allTags = [] } = useQuery({ queryKey: ['tags'], queryFn: getTags })
   const containerRef = useRef<HTMLDivElement>(null)
 
+  const [selectedTags, setSelectedTags] = useState<Tag[]>(editEntry?.tags ?? [])
   const [taskId, setTaskId] = useState<number | ''>(editEntry?.taskId ?? '')
   const [taskSearch, setTaskSearch] = useState(editEntry ? taskLabel(editEntry) : '')
   const [showDropdown, setShowDropdown] = useState(false)
@@ -62,6 +67,15 @@ export function TimeEntryForm({ date, editEntry, onClose }: Props) {
     qc.invalidateQueries({ queryKey: ['tasks'] })
   }
 
+  const createTagMutation = useMutation({
+    mutationFn: (name: string) => createTag({ name }),
+    onSuccess: (newTag) => {
+      qc.invalidateQueries({ queryKey: ['tags'] })
+      setSelectedTags(prev => [...prev, newTag])
+    },
+    onError: (e: Error) => setError(e.message),
+  })
+
   const mutation = useMutation({
     mutationFn: () => {
       const data = {
@@ -71,6 +85,7 @@ export function TimeEntryForm({ date, editEntry, onClose }: Props) {
         startTime: startTime || undefined,
         endTime: endTime || undefined,
         durationString: durationStr || undefined,
+        tagIds: selectedTags.map(t => t.id),
       }
       return editEntry
         ? updateTimeEntry(editEntry.id, data)
@@ -292,6 +307,16 @@ export function TimeEntryForm({ date, editEntry, onClose }: Props) {
           value={description}
           onChange={setDescription}
           placeholder="Valfri beskrivning"
+        />
+
+        <TagInput
+          label="Taggar"
+          selectedTags={selectedTags}
+          availableTags={allTags}
+          onAdd={tag => setSelectedTags(prev => [...prev, tag])}
+          onRemove={id => setSelectedTags(prev => prev.filter(t => t.id !== id))}
+          onCreateAndAdd={async (name) => { await createTagMutation.mutateAsync(name) }}
+          creating={createTagMutation.isPending}
         />
 
         {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
