@@ -22,6 +22,7 @@ RUN dotnet publish Backend/TimeReport.Api/TimeReport.Api.csproj \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 RUN useradd --no-create-home appuser && chown appuser /app
+RUN mkdir -p /app/data /app/backup && chown appuser /app/data /app/backup
 USER appuser
 COPY --from=backend-build /publish ./
 EXPOSE 8080
