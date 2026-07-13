@@ -6,6 +6,13 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - C:/Users/jimmy.vilen/Dropbox/db:/app/data
+      - db-data:/app/data
+      - C:/Users/jimmy.vilen/Dropbox/db:/app/backup
     environment:
       ConnectionStrings__Default: "Data Source=/app/data/local.db"
+      Backup__Directory: "/app/backup"
+      Backup__IntervalMinutes: "360"
+      Backup__RetentionCount: "14"
+
+volumes:
+  db-data:

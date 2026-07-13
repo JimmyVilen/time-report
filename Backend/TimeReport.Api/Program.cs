@@ -42,6 +42,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<JiraService>();
 builder.Services.AddSingleton<DurationParser>();
 builder.Services.AddSingleton<TimeEntryResolverService>();
+builder.Services.AddHostedService<DatabaseBackupService>();
 
 var app = builder.Build();
 
