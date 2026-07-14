@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getProfile, updateProfile } from '../../api/profile'
+import { DatabaseSection } from './DatabaseSection'
 
 const inputClass = 'w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] placeholder-[var(--foreground-muted)] focus:border-[var(--accent)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)]'
 const labelClass = 'mb-1 block text-xs text-[var(--foreground-muted)]'
@@ -159,6 +160,8 @@ export function ProfilePage() {
               </div>
             </div>
           </div>
+
+          {user?.isAdmin && <DatabaseSection />}
 
         </div>
 
