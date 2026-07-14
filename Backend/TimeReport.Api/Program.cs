@@ -40,6 +40,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<JiraService>();
+builder.Services.AddScoped<DatabaseSnapshotService>();
 builder.Services.AddSingleton<DurationParser>();
 builder.Services.AddSingleton<TimeEntryResolverService>();
 builder.Services.AddHostedService<DatabaseBackupService>();
