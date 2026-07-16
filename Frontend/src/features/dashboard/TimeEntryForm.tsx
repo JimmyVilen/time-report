@@ -169,6 +169,12 @@ export function TimeEntryForm({ date, editEntry, onClose }: Props) {
     setTaskId(t.id)
     setTaskSearch(taskLabel(t))
     setShowDropdown(false)
+    if (!editEntry && t.defaultTags?.length) {
+      setSelectedTags(prev => {
+        const existingIds = new Set(prev.map(tag => tag.id))
+        return [...prev, ...t.defaultTags.filter(tag => !existingIds.has(tag.id))]
+      })
+    }
   }
 
   const handleTaskSearchChange = (val: string) => {
