@@ -14,7 +14,7 @@ Time reporting app built with ASP.NET Core + React + TypeScript.
 ### Requirements
 
 - .NET 10 SDK
-- Node.js 22+
+- Node.js 24+
 
 ### Running in Development
 
