@@ -55,10 +55,25 @@ using (var scope = app.Services.CreateScope())
 
 app.UseSerilogRequestLogging();
 app.UseDefaultFiles();
-app.UseStaticFiles();
+
+var staticFileOptions = new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        // Vite hashes /assets/* filenames per build, so they can be cached forever.
+        // index.html (default document or SPA fallback) must always revalidate so
+        // navigations - e.g. the redirect to /login on 401 - pick up new bundle refs.
+        var cacheControl = ctx.Context.Request.Path.StartsWithSegments("/assets")
+            ? "public, max-age=31536000, immutable"
+            : "no-cache";
+        ctx.Context.Response.Headers.CacheControl = cacheControl;
+    }
+};
+
+app.UseStaticFiles(staticFileOptions);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapFallbackToFile("index.html");
+app.MapFallbackToFile("index.html", staticFileOptions);
 
 app.Run();
