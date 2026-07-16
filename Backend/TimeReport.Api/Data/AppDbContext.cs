@@ -14,6 +14,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<PlannerBlock> PlannerBlocks => Set<PlannerBlock>();
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<TimeEntryTag> TimeEntryTags => Set<TimeEntryTag>();
+    public DbSet<TaskDefaultTag> TaskDefaultTags => Set<TaskDefaultTag>();
 
     protected override void OnModelCreating(ModelBuilder m)
     {
@@ -27,6 +28,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 j => j.HasOne(x => x.Tag).WithMany().HasForeignKey(x => x.TagId).OnDelete(DeleteBehavior.Cascade),
                 j => j.HasOne(x => x.TimeEntry).WithMany().HasForeignKey(x => x.TimeEntryId).OnDelete(DeleteBehavior.Cascade),
                 j => j.HasKey(x => new { x.TimeEntryId, x.TagId }));
+
+        m.Entity<AppTask>()
+            .HasMany(t => t.DefaultTags)
+            .WithMany()
+            .UsingEntity<TaskDefaultTag>(
+                j => j.HasOne(x => x.Tag).WithMany().HasForeignKey(x => x.TagId).OnDelete(DeleteBehavior.Cascade),
+                j => j.HasOne(x => x.Task).WithMany().HasForeignKey(x => x.TaskId).OnDelete(DeleteBehavior.Cascade),
+                j => j.HasKey(x => new { x.TaskId, x.TagId }));
 
         // Apply snake_case naming to all tables and columns (matches Rails schema)
         foreach (var entity in m.Model.GetEntityTypes())

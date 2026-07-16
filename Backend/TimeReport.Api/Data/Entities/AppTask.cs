@@ -21,4 +21,5 @@ public class AppTask
     public User User { get; set; } = null!;
     public Project? Project { get; set; }
     public ICollection<TimeEntry> TimeEntries { get; set; } = [];
+    public ICollection<Tag> DefaultTags { get; set; } = [];
 }
