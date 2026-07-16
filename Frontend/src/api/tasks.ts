@@ -1,4 +1,5 @@
 import { api } from './client'
+import type { Tag } from './tags'
 
 export interface Task {
   id: number
@@ -15,6 +16,7 @@ export interface Task {
   updatedAt: string
   timeEntryCount: number
   totalMinutes: number
+  defaultTags: Tag[]
 }
 
 export const getTasks = (params?: { q?: string; includeArchived?: boolean }) => {
@@ -29,6 +31,7 @@ export const createTask = (data: {
   description?: string
   jiraUrl?: string
   projectId?: number
+  defaultTagIds?: number[]
 }) => api.post<Task>('/api/tasks', data)
 
 export const updateTask = (id: number, data: {
@@ -36,6 +39,7 @@ export const updateTask = (id: number, data: {
   description?: string | null
   jiraUrl?: string | null
   projectId?: number | null
+  defaultTagIds?: number[]
 }) => api.put<Task>(`/api/tasks/${id}`, data)
 
 export const deleteTask = (id: number) =>

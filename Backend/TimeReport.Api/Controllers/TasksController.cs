@@ -19,6 +19,7 @@ public class TasksController(AppDbContext db, JiraService jira) : ApiControllerB
             .AsNoTracking()
             .Include(t => t.Project)
             .Include(t => t.TimeEntries)
+            .Include(t => t.DefaultTags)
             .AsQueryable();
 
         if (!includeArchived)
@@ -71,6 +72,9 @@ public class TasksController(AppDbContext db, JiraService jira) : ApiControllerB
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+        if (req.DefaultTagIds is not null)
+            task.DefaultTags = await db.Tags.Where(t => t.UserId == CurrentUserId && req.DefaultTagIds.Contains(t.Id)).ToListAsync();
+
         db.Tasks.Add(task);
         await db.SaveChangesAsync();
 
@@ -95,6 +99,8 @@ public class TasksController(AppDbContext db, JiraService jira) : ApiControllerB
         task.JiraUrl = req.JiraUrl?.Trim();
         task.ProjectId = req.ProjectId;
         task.UpdatedAt = DateTime.UtcNow;
+        if (req.DefaultTagIds is not null)
+            task.DefaultTags = await db.Tags.Where(t => t.UserId == CurrentUserId && req.DefaultTagIds.Contains(t.Id)).ToListAsync();
         await db.SaveChangesAsync();
 
         await db.Entry(task).Reference(t => t.Project).LoadAsync();
@@ -170,6 +176,7 @@ public class TasksController(AppDbContext db, JiraService jira) : ApiControllerB
         await db.Tasks
             .Include(t => t.Project)
             .Include(t => t.TimeEntries)
+            .Include(t => t.DefaultTags)
             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == CurrentUserId);
 
     private static object ToDto(AppTask t) => new
@@ -184,8 +191,9 @@ public class TasksController(AppDbContext db, JiraService jira) : ApiControllerB
         TotalMinutes = t.TimeEntries.Sum(e =>
             e.StartTime.HasValue && e.EndTime.HasValue
                 ? (int)Math.Round((e.EndTime.Value - e.StartTime.Value).TotalMinutes)
-                : e.DurationMinutes ?? 0)
+                : e.DurationMinutes ?? 0),
+        DefaultTags = t.DefaultTags.Select(tag => new { tag.Id, tag.Name, tag.Color }).ToList()
     };
 }
 
-public record TaskRequest(string Title, string? Description, string? JiraUrl, int? ProjectId);
+public record TaskRequest(string Title, string? Description, string? JiraUrl, int? ProjectId, int[]? DefaultTagIds);

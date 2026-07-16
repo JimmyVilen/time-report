@@ -10,9 +10,11 @@ import {
   type Task,
 } from '../../api/tasks'
 import { getProjects } from '../../api/projects'
+import { getTags, createTag, type Tag } from '../../api/tags'
 import { formatMinutes } from '../../lib/durationParser'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
+import { TagInput } from '../../components/TagInput'
 
 export function TasksPage() {
   const qc = useQueryClient()
@@ -24,6 +26,7 @@ export function TasksPage() {
   const [desc, setDesc] = useState('')
   const [jiraUrl, setJiraUrl] = useState('')
   const [projectId, setProjectId] = useState<number | ''>('')
+  const [defaultTags, setDefaultTags] = useState<Tag[]>([])
   const [error, setError] = useState('')
 
   const { data: tasks = [] } = useQuery({
@@ -31,19 +34,29 @@ export function TasksPage() {
     queryFn: () => getTasks({ q: search || undefined, includeArchived: tab === 'archived' }),
   })
   const { data: projects = [] } = useQuery({ queryKey: ['projects'], queryFn: getProjects })
+  const { data: allTags = [] } = useQuery({ queryKey: ['tags'], queryFn: getTags })
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ['tasks'] })
   }
 
+  const createTagMutation = useMutation({
+    mutationFn: (name: string) => createTag({ name }),
+    onSuccess: (newTag) => {
+      qc.invalidateQueries({ queryKey: ['tags'] })
+      setDefaultTags(prev => [...prev, newTag])
+    },
+    onError: (e: Error) => setError(e.message),
+  })
+
   const createMutation = useMutation({
-    mutationFn: () => createTask({ title, description: desc || undefined, jiraUrl: jiraUrl || undefined, projectId: projectId || undefined }),
+    mutationFn: () => createTask({ title, description: desc || undefined, jiraUrl: jiraUrl || undefined, projectId: projectId || undefined, defaultTagIds: defaultTags.map(t => t.id) }),
     onSuccess: () => { invalidate(); resetForm() },
     onError: (e: Error) => setError(e.message),
   })
 
   const updateMutation = useMutation({
-    mutationFn: () => updateTask(editTask!.id, { title, description: desc || null, jiraUrl: jiraUrl || null, projectId: projectId || null }),
+    mutationFn: () => updateTask(editTask!.id, { title, description: desc || null, jiraUrl: jiraUrl || null, projectId: projectId || null, defaultTagIds: defaultTags.map(t => t.id) }),
     onSuccess: () => { invalidate(); resetForm() },
     onError: (e: Error) => setError(e.message),
   })
@@ -53,11 +66,11 @@ export function TasksPage() {
   const restoreMutation = useMutation({ mutationFn: restoreTask, onSuccess: invalidate })
 
   const resetForm = () => {
-    setEditTask(null); setShowForm(false); setTitle(''); setDesc(''); setJiraUrl(''); setProjectId(''); setError('')
+    setEditTask(null); setShowForm(false); setTitle(''); setDesc(''); setJiraUrl(''); setProjectId(''); setDefaultTags([]); setError('')
   }
 
   const startEdit = (t: Task) => {
-    setEditTask(t); setTitle(t.title); setDesc(t.description ?? ''); setJiraUrl(t.jiraUrl ?? ''); setProjectId(t.projectId ?? ''); setShowForm(false)
+    setEditTask(t); setTitle(t.title); setDesc(t.description ?? ''); setJiraUrl(t.jiraUrl ?? ''); setProjectId(t.projectId ?? ''); setDefaultTags(t.defaultTags); setShowForm(false)
   }
 
   const filtered = tasks.filter(t => t.isArchived === (tab === 'archived'))
@@ -72,7 +85,7 @@ export function TasksPage() {
     <div className="flex-1 p-4 md:p-6 max-w-app mx-auto w-full">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-semibold text-[var(--foreground)]">Uppgifter</h1>
-        <Button variant="primary" onClick={() => { setShowForm(s => !s); setEditTask(null); setTitle(''); setDesc(''); setJiraUrl(''); setProjectId('') }}>
+        <Button variant="primary" onClick={() => { setShowForm(s => !s); setEditTask(null); setTitle(''); setDesc(''); setJiraUrl(''); setProjectId(''); setDefaultTags([]) }}>
           + Ny uppgift
         </Button>
       </div>
@@ -104,6 +117,15 @@ export function TasksPage() {
               ))}
             </select>
           </div>
+          <TagInput
+            label="Default-taggar"
+            selectedTags={defaultTags}
+            availableTags={allTags}
+            onAdd={tag => setDefaultTags(prev => [...prev, tag])}
+            onRemove={id => setDefaultTags(prev => prev.filter(t => t.id !== id))}
+            onCreateAndAdd={async (name) => { try { await createTagMutation.mutateAsync(name) } catch {} }}
+            creating={createTagMutation.isPending}
+          />
           {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
           <div className="flex gap-2">
             <Button type="submit" variant="primary" loading={createMutation.isPending || updateMutation.isPending}>
