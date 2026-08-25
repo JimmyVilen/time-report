@@ -73,9 +73,10 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 15px;
   font-synthesis: none;
-  line-height: 1.48;
+  font-weight: 430;
+  line-height: 1.5;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -140,7 +141,7 @@ textarea:focus-visible,
 .app-main h1 {
   color: var(--foreground-strong);
   font-size: clamp(2rem, 3vw, 2.75rem);
-  font-weight: 600;
+  font-weight: 650;
   line-height: 1;
   letter-spacing: -0.018em;
 }
@@ -148,6 +149,19 @@ textarea:focus-visible,
 .app-main h2,
 .app-main h3 {
   color: var(--foreground-strong);
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  line-height: 1.15;
+}
+
+.app-main h2 {
+  font-size: 1.25rem;
+  font-weight: 650;
+}
+
+.app-main h3 {
+  font-size: 1.08rem;
+  font-weight: 650;
 }
 
 .app-main .rounded-xl,
@@ -168,7 +182,8 @@ textarea:focus-visible,
   margin-bottom: 24px;
   color: var(--foreground-muted);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
+  font-weight: 500;
   letter-spacing: 0.015em;
 }
 
@@ -191,8 +206,8 @@ textarea:focus-visible,
   align-items: baseline;
   color: var(--foreground-strong);
   font-family: var(--font-display);
-  font-size: 2.05rem;
-  font-weight: 650;
+  font-size: 2.28rem;
+  font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1;
   text-decoration: none;
@@ -219,8 +234,8 @@ textarea:focus-visible,
   padding: 0 14px;
   color: #384b47;
   font-family: var(--font-display);
-  font-size: 1.08rem;
-  font-weight: 520;
+  font-size: 1.18rem;
+  font-weight: 600;
   text-decoration: none;
   transition: color 160ms ease, background 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
@@ -259,8 +274,8 @@ textarea:focus-visible,
   display: block;
   overflow: hidden;
   color: var(--foreground-strong);
-  font-size: 0.76rem;
-  font-weight: 600;
+  font-size: 0.82rem;
+  font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -271,7 +286,8 @@ textarea:focus-visible,
   margin-top: 2px;
   color: var(--foreground-muted);
   font-family: var(--font-mono);
-  font-size: 0.64rem;
+  font-size: 0.68rem;
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -322,6 +338,7 @@ textarea:focus {
 
 label {
   font-family: var(--font-mono);
+  font-weight: 600;
   letter-spacing: 0.01em;
 }
 
@@ -373,8 +390,8 @@ label {
 
 .date-heading h1 {
   margin: 0;
-  font-size: clamp(2.5rem, 4vw, 3.5rem);
-  font-weight: 620;
+  font-size: clamp(2.65rem, 4vw, 3.65rem);
+  font-weight: 680;
   white-space: nowrap;
 }
 
@@ -382,7 +399,8 @@ label {
   margin: 5px 0 0 2px;
   color: var(--foreground-muted);
   font-family: var(--font-mono);
-  font-size: 0.66rem;
+  font-size: 0.72rem;
+  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -413,14 +431,16 @@ label {
   gap: 16px;
   color: var(--foreground-muted);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
+  font-weight: 500;
 }
 
 .week-caption strong {
   color: var(--foreground-strong);
   font-family: var(--font-sans);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.76rem;
+  font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -462,8 +482,8 @@ label {
 .summary-instrument small {
   color: var(--foreground-muted);
   font-family: var(--font-mono);
-  font-size: 0.58rem;
-  font-weight: 600;
+  font-size: 0.64rem;
+  font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
@@ -471,7 +491,8 @@ label {
 .summary-instrument span {
   color: var(--foreground-strong);
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: 1.24rem;
+  font-weight: 620;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
@@ -526,8 +547,8 @@ label {
   display: block;
   color: inherit;
   font-family: var(--font-mono);
-  font-size: 0.61rem;
-  font-weight: 650;
+  font-size: 0.67rem;
+  font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
@@ -536,7 +557,8 @@ label {
   display: block;
   margin-top: 3px;
   font-family: var(--font-display);
-  font-size: 1.02rem;
+  font-size: 1.08rem;
+  font-weight: 520;
 }
 
 .week-day-total {
@@ -544,7 +566,8 @@ label {
   margin-top: 6px;
   color: var(--foreground-strong);
   font-family: var(--font-display);
-  font-size: 1.08rem;
+  font-size: 1.17rem;
+  font-weight: 620;
   font-variant-numeric: tabular-nums;
 }
 
@@ -601,14 +624,15 @@ label {
 .daily-total span:first-child {
   color: var(--foreground-muted);
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 1.12rem;
+  font-weight: 520;
 }
 
 .daily-total strong {
   color: var(--accent);
   font-family: var(--font-display);
-  font-size: 1.85rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 680;
   font-variant-numeric: tabular-nums;
 }
 
@@ -650,14 +674,15 @@ label {
 
 .auth-card .brand-wordmark {
   margin-bottom: 32px;
-  font-size: 1.55rem;
+  font-size: 1.9rem;
+  font-weight: 700;
 }
 
 .auth-title {
   margin: 0 0 8px;
   color: var(--foreground-strong);
   font-size: 2.55rem;
-  font-weight: 620;
+  font-weight: 680;
   letter-spacing: -0.018em;
 }
 
@@ -666,6 +691,38 @@ label {
 .app-main time,
 .app-main input[type="time"],
 .app-main input[type="date"] {
+  font-variant-numeric: tabular-nums;
+}
+
+.time-entry-key {
+  font-size: 1.02rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.time-entry-title {
+  font-size: 1.22rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.time-entry-description {
+  font-size: 0.9rem;
+  font-weight: 450;
+  line-height: 1.5;
+}
+
+.time-entry-duration {
+  font-size: 1.72rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.time-entry-time {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
@@ -776,7 +833,7 @@ input[type="time"]::-webkit-datetime-edit-ampm-field { display: none; }
     backdrop-filter: blur(16px);
   }
 
-  .mobile-topbar .brand-wordmark { font-size: 1.55rem; }
+  .mobile-topbar .brand-wordmark { font-size: 1.85rem; }
   .mobile-menu-button {
     display: grid;
     width: 42px;

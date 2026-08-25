@@ -82,17 +82,17 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
                     href={entry.taskJiraUrl ?? '#'}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="shrink-0 font-display text-base font-semibold text-[var(--accent)] hover:underline"
+                    className="time-entry-key shrink-0 font-display text-[var(--accent)] hover:underline"
                   >
                     [{entry.taskJiraKey}]
                   </a>
                 )}
-                <span className="font-display text-base font-semibold text-[var(--foreground-strong)] md:text-lg truncate">
+                <span className="time-entry-title font-display text-[var(--foreground-strong)] truncate">
                   {entry.taskTitle}
                 </span>
               </div>
               {entry.description && (
-                <div className="mt-1 text-sm text-[var(--foreground-muted)] line-clamp-3 [&_.prose-content]:text-sm [&_.prose-content]:text-[var(--foreground-muted)] [&_.prose-content_p]:mb-0 [&_.prose-content_h1]:text-sm [&_.prose-content_h2]:text-sm [&_.prose-content_h3]:text-sm">
+                <div className="time-entry-description mt-1 text-[var(--foreground-muted)] line-clamp-3 [&_.prose-content]:text-[inherit] [&_.prose-content]:text-[var(--foreground-muted)] [&_.prose-content_p]:mb-0 [&_.prose-content_h1]:text-[inherit] [&_.prose-content_h2]:text-[inherit] [&_.prose-content_h3]:text-[inherit]">
                   <MarkdownRenderer content={entry.description} />
                 </div>
               )}
@@ -186,10 +186,10 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
 
               {/* Duration */}
               <div className="w-28">
-                <div className="font-display text-2xl font-medium text-[var(--foreground-strong)] text-right">
+                <div className="time-entry-duration font-display text-[var(--foreground-strong)] text-right">
                   {entry.effectiveDurationMinutes > 0 ? formatMinutes(entry.effectiveDurationMinutes) : ''}
                 </div>
-                <div className="mt-1 text-xs text-[var(--foreground-muted)] text-right">
+                <div className="time-entry-time mt-1 text-[var(--foreground-muted)] text-right">
                   {entry.startTime && entry.endTime
                     ? `${entry.startTime}–${entry.endTime}`
                     : entry.startTime
