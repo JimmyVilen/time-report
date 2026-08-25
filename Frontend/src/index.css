@@ -1,35 +1,60 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "TimeReport Display";
+  src: url("/fonts/cormorant-garamond-latin-wght-normal.woff2") format("woff2-variations");
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TimeReport Display";
+  src: url("/fonts/cormorant-garamond-latin-wght-italic.woff2") format("woff2-variations");
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TimeReport Sans";
+  src: url("/fonts/manrope-latin-wght-normal.woff2") format("woff2-variations");
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+}
+
 @theme {
   --max-width-app: 1440px;
 }
 
 :root {
   color-scheme: light;
-  --background: #f7f4ee;
-  --background-canvas: #f7f4ee;
-  --background-card: #fffdf9;
-  --background-card-hover: #fbf8f1;
-  --background-elevated: #f0ede5;
-  --foreground: #142d29;
-  --foreground-strong: #0b211e;
-  --foreground-muted: #66726e;
+  --background: #f8f5ef;
+  --background-canvas: #f8f5ef;
+  --background-card: #fdfbf7;
+  --background-card-hover: #f7f3eb;
+  --background-elevated: #efebe2;
+  --foreground: #1b2b28;
+  --foreground-strong: #0d1f1c;
+  --foreground-muted: #64706c;
   --accent: #0d5147;
   --accent-hover: #093e37;
   --accent-soft: #e5eeeb;
   --accent-glow: rgba(13, 81, 71, 0.16);
-  --border: #ddd3c3;
-  --border-light: #ebe4d8;
+  --border: #d2c9bb;
+  --border-light: #e8e1d6;
   --champagne: #ae8a52;
   --champagne-soft: #f3ead9;
   --success: #267461;
   --success-hover: #1d5d4d;
   --danger: #bd3b2e;
   --danger-hover: #982c22;
-  --shadow-sm: 0 1px 2px rgba(30, 40, 36, 0.03), 0 8px 24px rgba(30, 40, 36, 0.035);
-  --shadow-md: 0 22px 55px rgba(27, 43, 38, 0.1);
-  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --shadow-sm: 0 1px 1px rgba(30, 40, 36, 0.025), 0 5px 16px rgba(30, 40, 36, 0.025);
+  --shadow-md: 0 18px 46px rgba(27, 43, 38, 0.09);
+  --font-display: "TimeReport Display", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-sans: "TimeReport Sans", Avenir, "Segoe UI", sans-serif;
+  --font-mono: "SFMono-Regular", "Cascadia Mono", "Roboto Mono", Consolas, monospace;
 }
 
 * {
@@ -46,12 +71,11 @@ body {
   min-height: 100vh;
   margin: 0;
   color: var(--foreground);
-  background:
-    radial-gradient(circle at 82% 0%, rgba(255, 255, 255, 0.92), transparent 34rem),
-    var(--background);
+  background: var(--background);
   font-family: var(--font-sans);
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 14px;
+  font-synthesis: none;
+  line-height: 1.48;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -90,6 +114,7 @@ textarea:focus-visible,
 .app-main h1,
 .auth-title {
   font-family: var(--font-display);
+  font-optical-sizing: auto;
 }
 
 .app-shell {
@@ -101,7 +126,7 @@ textarea:focus-visible,
 .app-main {
   min-width: 0;
   flex: 1;
-  padding-left: 272px;
+  padding-left: 256px;
 }
 
 .app-main > div {
@@ -109,15 +134,15 @@ textarea:focus-visible,
 }
 
 .app-main > .max-w-app {
-  padding: 42px 46px 32px;
+  padding: 34px 40px 26px;
 }
 
 .app-main h1 {
   color: var(--foreground-strong);
-  font-size: clamp(2rem, 3vw, 3rem);
-  font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: -0.025em;
+  font-size: clamp(2rem, 3vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.018em;
 }
 
 .app-main h2,
@@ -139,10 +164,12 @@ textarea:focus-visible,
 }
 
 .page-intro {
-  margin-top: -22px;
-  margin-bottom: 30px;
+  margin-top: -20px;
+  margin-bottom: 24px;
   color: var(--foreground-muted);
-  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.015em;
 }
 
 /* Desktop application rail */
@@ -151,11 +178,11 @@ textarea:focus-visible,
   inset: 0 auto 0 0;
   z-index: 50;
   display: flex;
-  width: 272px;
+  width: 256px;
   flex-direction: column;
   border-right: 1px solid var(--border);
-  background: rgba(250, 248, 243, 0.96);
-  padding: 28px 20px 22px;
+  background: rgba(250, 248, 243, 0.97);
+  padding: 24px 18px 20px;
   backdrop-filter: blur(16px);
 }
 
@@ -164,9 +191,10 @@ textarea:focus-visible,
   align-items: baseline;
   color: var(--foreground-strong);
   font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 600;
-  letter-spacing: -0.035em;
+  font-size: 2.05rem;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  line-height: 1;
   text-decoration: none;
 }
 
@@ -177,21 +205,22 @@ textarea:focus-visible,
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  margin-top: 38px;
+  gap: 4px;
+  margin-top: 32px;
 }
 
 .sidebar-link {
   display: flex;
-  min-height: 48px;
+  min-height: 46px;
   align-items: center;
-  gap: 15px;
+  gap: 14px;
   border: 1px solid transparent;
   border-radius: 6px;
-  padding: 0 15px;
+  padding: 0 14px;
   color: #384b47;
   font-family: var(--font-display);
-  font-size: 1.02rem;
+  font-size: 1.08rem;
+  font-weight: 520;
   text-decoration: none;
   transition: color 160ms ease, background 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
@@ -206,7 +235,7 @@ textarea:focus-visible,
   color: #fff;
   border-color: #0a493f;
   background: linear-gradient(135deg, #125c50, #0a433b);
-  box-shadow: 0 8px 24px rgba(13, 81, 71, 0.16), inset 0 1px rgba(255, 255, 255, 0.12);
+  box-shadow: 0 5px 16px rgba(13, 81, 71, 0.13), inset 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .sidebar-link svg {
@@ -230,7 +259,7 @@ textarea:focus-visible,
   display: block;
   overflow: hidden;
   color: var(--foreground-strong);
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -241,7 +270,8 @@ textarea:focus-visible,
   overflow: hidden;
   margin-top: 2px;
   color: var(--foreground-muted);
-  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -269,10 +299,10 @@ textarea:focus-visible,
 input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
 select,
 textarea {
-  min-height: 42px;
+  min-height: 40px;
   border-color: var(--border) !important;
   border-radius: 6px !important;
-  background-color: rgba(255, 253, 249, 0.84) !important;
+  background-color: rgba(253, 251, 247, 0.88) !important;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
   transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
@@ -291,6 +321,7 @@ textarea:focus {
 }
 
 label {
+  font-family: var(--font-mono);
   letter-spacing: 0.01em;
 }
 
@@ -303,21 +334,21 @@ label {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 28px;
-  margin-bottom: 22px;
+  gap: 24px;
+  margin-bottom: 18px;
 }
 
 .date-navigation {
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 26px;
+  gap: 20px;
 }
 
 .date-navigation .date-arrow {
   display: grid;
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   flex: none;
   place-items: center;
   border: 1px solid var(--border);
@@ -342,15 +373,17 @@ label {
 
 .date-heading h1 {
   margin: 0;
-  font-size: clamp(2.35rem, 4vw, 3.5rem);
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 620;
   white-space: nowrap;
 }
 
 .date-heading p {
-  margin: 7px 0 0 2px;
+  margin: 5px 0 0 2px;
   color: var(--foreground-muted);
-  font-size: 0.8rem;
-  letter-spacing: 0.14em;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -358,20 +391,20 @@ label {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 12px;
-  padding-top: 6px;
+  gap: 10px;
+  padding-top: 4px;
 }
 
 .week-overview {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .week-overview-top {
   display: flex;
   align-items: stretch;
   justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 17px;
+  gap: 20px;
+  margin-bottom: 14px;
 }
 
 .week-caption {
@@ -379,14 +412,16 @@ label {
   align-items: center;
   gap: 16px;
   color: var(--foreground-muted);
-  font-family: var(--font-display);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
 }
 
 .week-caption strong {
   color: var(--foreground-strong);
   font-family: var(--font-sans);
-  font-size: 0.78rem;
-  letter-spacing: 0.18em;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
@@ -407,11 +442,11 @@ label {
 
 .summary-instrument {
   display: grid;
-  min-width: 142px;
-  grid-template-columns: 30px 1fr;
-  column-gap: 11px;
+  min-width: 136px;
+  grid-template-columns: 28px 1fr;
+  column-gap: 9px;
   align-items: center;
-  padding: 11px 20px;
+  padding: 9px 16px;
 }
 
 .summary-instrument + .summary-instrument {
@@ -420,13 +455,14 @@ label {
 
 .summary-instrument svg {
   grid-row: 1 / 3;
-  width: 24px;
+  width: 22px;
   color: var(--accent);
 }
 
 .summary-instrument small {
   color: var(--foreground-muted);
-  font-size: 0.63rem;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -435,7 +471,8 @@ label {
 .summary-instrument span {
   color: var(--foreground-strong);
   font-family: var(--font-display);
-  font-size: 1.13rem;
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
 
@@ -451,10 +488,10 @@ label {
 
 .week-day {
   position: relative;
-  min-height: 106px;
+  min-height: 94px;
   border: 0;
   border-right: 1px solid var(--border);
-  padding: 17px 10px 14px;
+  padding: 13px 10px 11px;
   color: var(--foreground-muted);
   background: transparent;
   cursor: pointer;
@@ -488,7 +525,8 @@ label {
 .week-day-name {
   display: block;
   color: inherit;
-  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-size: 0.61rem;
   font-weight: 650;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -496,23 +534,24 @@ label {
 
 .week-day-date {
   display: block;
-  margin-top: 4px;
+  margin-top: 3px;
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 1.02rem;
 }
 
 .week-day-total {
   display: block;
-  margin-top: 9px;
+  margin-top: 6px;
   color: var(--foreground-strong);
   font-family: var(--font-display);
   font-size: 1.08rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .dashboard-stack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .time-entry-card {
@@ -521,20 +560,20 @@ label {
   border-left: 5px solid var(--accent);
   border-radius: 8px;
   background: rgba(255, 253, 249, 0.84);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 0 rgba(27, 43, 38, 0.015);
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
 .time-entry-card:hover {
   border-color: #c8bda9;
-  box-shadow: 0 12px 32px rgba(27, 43, 38, 0.07);
+  box-shadow: 0 8px 24px rgba(27, 43, 38, 0.045);
   transform: translateY(-1px);
 }
 
 .time-entry-action {
   display: grid;
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   place-items: center;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -553,23 +592,24 @@ label {
   display: flex;
   justify-content: flex-end;
   align-items: baseline;
-  gap: 12px;
+  gap: 10px;
   margin-top: 2px;
   border-top: 1px solid var(--border);
-  padding: 14px 6px 0;
+  padding: 12px 6px 0;
 }
 
 .daily-total span:first-child {
   color: var(--foreground-muted);
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 1.05rem;
 }
 
 .daily-total strong {
   color: var(--accent);
   font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 500;
+  font-size: 1.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Auth */
@@ -602,7 +642,7 @@ label {
   max-width: 440px;
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 42px;
+  padding: 38px;
   background: rgba(255, 253, 249, 0.92);
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(14px);
@@ -616,9 +656,17 @@ label {
 .auth-title {
   margin: 0 0 8px;
   color: var(--foreground-strong);
-  font-size: 2.35rem;
-  font-weight: 500;
-  letter-spacing: -0.025em;
+  font-size: 2.55rem;
+  font-weight: 620;
+  letter-spacing: -0.018em;
+}
+
+.time-entry-card a[target="_blank"],
+.time-entry-card [class*="text-xs"],
+.app-main time,
+.app-main input[type="time"],
+.app-main input[type="date"] {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Scrollbar */
