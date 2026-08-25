@@ -54,12 +54,13 @@ export function BlockModal({ initialData, onSubmit, onClose, isLoading }: Props)
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#071e1a]/45 backdrop-blur-[2px]"
+      role="presentation"
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="bg-[var(--background-card)] border border-[var(--border)] rounded-xl shadow-xl w-full max-w-md mx-4 p-5">
+      <div className="bg-[var(--background-card)] border border-[var(--border)] rounded-xl shadow-[var(--shadow-md)] w-full max-w-md mx-4 p-6" role="dialog" aria-modal="true" aria-labelledby="planner-modal-title">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-semibold text-[var(--foreground)]">
+          <h2 id="planner-modal-title" className="font-display text-2xl font-semibold text-[var(--foreground)]">
             {initialData?.id ? 'Redigera block' : 'Nytt block'}
           </h2>
           <button
@@ -82,7 +83,7 @@ export function BlockModal({ initialData, onSubmit, onClose, isLoading }: Props)
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             <div className="flex flex-col gap-1">
               <label className="text-xs text-[var(--foreground-muted)]">Datum</label>
               <input
@@ -128,6 +129,8 @@ export function BlockModal({ initialData, onSubmit, onClose, isLoading }: Props)
                     outlineOffset: '2px',
                   }}
                   title={c}
+                  aria-label={`Välj färg ${c}`}
+                  aria-pressed={color === c}
                 />
               ))}
             </div>

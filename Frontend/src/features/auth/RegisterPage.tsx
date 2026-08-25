@@ -28,17 +28,20 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
-      <div className="w-full max-w-sm bg-[var(--background-card)] border border-[var(--border)] rounded-xl p-8 shadow-lg">
-        <h1 className="text-2xl font-semibold text-[var(--foreground)] mb-6">Registrera dig</h1>
+    <div className="auth-shell">
+      <div className="auth-card">
+        <a className="brand-wordmark" href="/login">Time<span>Report</span></a>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--champagne)]">Ett elegantare arbetsflöde</p>
+        <h1 className="auth-title">Skapa konto</h1>
+        <p className="mb-7 text-sm text-[var(--foreground-muted)]">Samla planering, uppgifter och tid på ett ställe.</p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input label="E-post" type="email" value={email} onChange={e => setEmail(e.target.value)} required autoFocus />
           <Input label="Lösenord" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
           <Input label="Bekräfta lösenord" type="password" value={confirm} onChange={e => setConfirm(e.target.value)} required />
           {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
-          <Button type="submit" variant="primary" loading={mutation.isPending}>Registrera</Button>
+          <Button type="submit" variant="primary" size="lg" loading={mutation.isPending} className="mt-2 w-full">Registrera</Button>
         </form>
-        <p className="mt-4 text-sm text-[var(--foreground-muted)] text-center">
+        <p className="mt-6 text-sm text-[var(--foreground-muted)] text-center">
           Har du ett konto?{' '}
           <a href="/login" className="text-[var(--accent)] hover:underline">Logga in</a>
         </p>

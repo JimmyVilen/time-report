@@ -56,12 +56,13 @@ export function ProjectsPage() {
 
   return (
     <div className="flex-1 p-4 md:p-6 max-w-app mx-auto w-full">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-4">
         <h1 className="text-xl font-semibold text-[var(--foreground)]">Projekt</h1>
         <Button variant="primary" onClick={() => { setShowForm(s => !s); setEditProject(null); setName(''); setDescription('') }}>
           + Nytt projekt
         </Button>
       </div>
+      <p className="page-intro">Organisera uppgifter och följ den rapporterade tiden per projekt.</p>
 
       {(showForm || editProject) && (
         <form onSubmit={handleFormSubmit} className="bg-[var(--background-card)] border border-[var(--border)] rounded-xl p-4 mb-6 flex flex-col gap-3">
@@ -97,9 +98,9 @@ export function ProjectsPage() {
           <p className="text-sm text-[var(--foreground-muted)] text-center py-8">Inga projekt.</p>
         )}
         {filtered.map(p => (
-          <div key={p.id} className="bg-[var(--background-card)] border border-[var(--border)] rounded-xl p-4 flex items-center gap-4">
+          <div key={p.id} className="bg-[var(--background-card)] border border-[var(--border)] rounded-xl p-5 flex flex-col items-start gap-4 shadow-[var(--shadow-sm)] sm:flex-row sm:items-center">
             <div className="flex-1 min-w-0">
-              <a href={`/projects/${p.id}`} className="font-medium text-[var(--foreground)] hover:text-[var(--accent)]">
+              <a href={`/projects/${p.id}`} className="font-display text-lg font-semibold text-[var(--foreground)] hover:text-[var(--accent)]">
                 {p.name}
               </a>
               {p.description && <p className="text-sm text-[var(--foreground-muted)] mt-0.5">{p.description}</p>}

@@ -207,8 +207,8 @@ export function TimeEntryForm({ date, editEntry, onClose }: Props) {
   }
 
   return (
-    <div className="bg-[var(--background-card)] border border-[var(--border)] rounded-xl p-4">
-      <h3 className="text-sm font-semibold text-[var(--foreground)] mb-4">
+    <div className="bg-[var(--background-card)] border border-[var(--border)] rounded-xl p-5 md:p-6 shadow-[var(--shadow-sm)]">
+      <h3 className="font-display text-xl font-semibold text-[var(--foreground)] mb-5">
         {editEntry ? 'Redigera tidspost' : 'Registrera tid'}
       </h3>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -280,7 +280,7 @@ export function TimeEntryForm({ date, editEntry, onClose }: Props) {
           )}
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-[var(--foreground-muted)]">Start</label>
             <input
@@ -321,7 +321,7 @@ export function TimeEntryForm({ date, editEntry, onClose }: Props) {
           availableTags={allTags}
           onAdd={tag => setSelectedTags(prev => [...prev, tag])}
           onRemove={id => setSelectedTags(prev => prev.filter(t => t.id !== id))}
-          onCreateAndAdd={async (name) => { try { await createTagMutation.mutateAsync(name) } catch {} }}
+          onCreateAndAdd={async (name) => { try { await createTagMutation.mutateAsync(name) } catch { return } }}
           creating={createTagMutation.isPending}
         />
 

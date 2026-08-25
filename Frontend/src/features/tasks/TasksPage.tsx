@@ -83,12 +83,13 @@ export function TasksPage() {
 
   return (
     <div className="flex-1 p-4 md:p-6 max-w-app mx-auto w-full">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-6 gap-4">
         <h1 className="text-xl font-semibold text-[var(--foreground)]">Uppgifter</h1>
         <Button variant="primary" onClick={() => { setShowForm(s => !s); setEditTask(null); setTitle(''); setDesc(''); setJiraUrl(''); setProjectId(''); setDefaultTags([]) }}>
           + Ny uppgift
         </Button>
       </div>
+      <p className="page-intro">Hantera återkommande arbete, Jira-ärenden och standardtaggar.</p>
 
       <input
         type="search"
@@ -123,7 +124,7 @@ export function TasksPage() {
             availableTags={allTags}
             onAdd={tag => setDefaultTags(prev => [...prev, tag])}
             onRemove={id => setDefaultTags(prev => prev.filter(t => t.id !== id))}
-            onCreateAndAdd={async (name) => { try { await createTagMutation.mutateAsync(name) } catch {} }}
+            onCreateAndAdd={async (name) => { try { await createTagMutation.mutateAsync(name) } catch { return } }}
             creating={createTagMutation.isPending}
           />
           {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
@@ -151,10 +152,10 @@ export function TasksPage() {
       <div className="flex flex-col gap-2">
         {filtered.length === 0 && <p className="text-sm text-[var(--foreground-muted)] text-center py-8">Inga uppgifter.</p>}
         {filtered.map(t => (
-          <div key={t.id} className="bg-[var(--background-card)] border border-[var(--border)] rounded-xl p-4 flex items-start gap-3">
+          <div key={t.id} className="bg-[var(--background-card)] border border-[var(--border)] rounded-xl p-5 flex flex-col items-start gap-3 shadow-[var(--shadow-sm)] sm:flex-row">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-medium text-[var(--foreground)]">{t.title}</span>
+                <span className="font-display text-lg font-semibold text-[var(--foreground)]">{t.title}</span>
                 {t.jiraKey && (
                   <a href={t.jiraUrl ?? '#'} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--accent)] hover:underline">{t.jiraKey}</a>
                 )}
@@ -162,7 +163,7 @@ export function TasksPage() {
                   <span className="text-xs bg-[var(--background-elevated)] text-[var(--foreground-muted)] px-2 py-0.5 rounded">{t.projectName}</span>
                 )}
                 {t.isArchived && (
-                  <span className="text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2 py-0.5 rounded">Arkiverad</span>
+                  <span className="text-xs bg-[var(--champagne-soft)] text-[#7e5c2b] border border-[#e2d0ae] px-2 py-0.5 rounded">Arkiverad</span>
                 )}
               </div>
               {t.description && <p className="text-sm text-[var(--foreground-muted)] mt-0.5 line-clamp-2">{t.description}</p>}
