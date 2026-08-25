@@ -154,7 +154,7 @@ export function DashboardPage() {
       {isLoading ? (
         <div className="text-sm text-[var(--foreground-muted)] py-8 text-center">Laddar dagens tid…</div>
       ) : entries.length === 0 ? (
-        <div className="text-sm text-[var(--foreground-muted)] py-12 text-center border border-dashed border-[var(--border)] rounded-xl bg-[var(--background-card)]/60">
+        <div className="dashboard-empty-state py-12 text-center border border-dashed border-[var(--border)] rounded-xl bg-[var(--background-card)]/60">
           Inga tidsposter för {formatDate(date)}
         </div>
       ) : (

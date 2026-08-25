@@ -231,18 +231,18 @@ export function TimeEntryForm({ date, editEntry, onClose }: Props) {
                 <button
                   key={t.id}
                   type="button"
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--background-card-hover)] text-[var(--foreground)] flex items-center gap-2"
+                  className="form-list-option w-full text-left px-3 py-2 hover:bg-[var(--background-card-hover)] text-[var(--foreground)] flex items-center gap-2"
                   onMouseDown={() => handleTaskSelect(t)}
                 >
                   {t.isFavorite && <span className="text-yellow-400">★</span>}
                   <span className="truncate">{taskLabel(t)}</span>
-                  {t.projectName && <span className="text-xs text-[var(--foreground-muted)] shrink-0">{t.projectName}</span>}
+                  {t.projectName && <span className="form-list-option-meta text-[var(--foreground-muted)] shrink-0">{t.projectName}</span>}
                 </button>
               ))}
               {isJiraUrl && (
                 <button
                   type="button"
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--background-card-hover)] text-[var(--accent)]"
+                  className="form-list-option w-full text-left px-3 py-2 hover:bg-[var(--background-card-hover)] text-[var(--accent)]"
                   onMouseDown={async () => {
                     setShowDropdown(false)
                     try {
@@ -261,7 +261,7 @@ export function TimeEntryForm({ date, editEntry, onClose }: Props) {
               {!isJiraUrl && taskSearch.length > 1 && (
                 <button
                   type="button"
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--background-card-hover)] text-[var(--accent)]"
+                  className="form-list-option w-full text-left px-3 py-2 hover:bg-[var(--background-card-hover)] text-[var(--accent)]"
                   onMouseDown={async () => {
                     setShowDropdown(false)
                     try {

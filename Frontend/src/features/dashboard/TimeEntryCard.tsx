@@ -102,7 +102,7 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
                     <span
                       key={tag.id}
                       style={tagColorStyle(tag.color)}
-                      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${!tag.color ? tagDefaultClass : ''}`}
+                      className={`tag-chip inline-flex items-center px-2 py-0.5 rounded ${!tag.color ? tagDefaultClass : ''}`}
                     >
                       {tag.name}
                     </span>
