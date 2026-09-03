@@ -1,0 +1,6 @@
+node_modules
+dist
+test
+scripts/db/migrate-sqlite-to-postgres.ts
+.env*
+*.db
