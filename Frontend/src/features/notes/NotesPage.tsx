@@ -24,6 +24,7 @@ export function NotesPage() {
   return (
     <div className="flex-1 p-4 md:p-6 max-w-app mx-auto w-full">
       <h1 className="mb-8 text-xl font-semibold text-[var(--foreground)]">Noteringar</h1>
+      <p className="page-intro">Sök och återvänd till dina dagliga arbetsanteckningar.</p>
 
       <div className="divide-y divide-[var(--border)]">
 
@@ -60,9 +61,9 @@ export function NotesPage() {
               {search ? 'Inga noteringar matchar sökningen.' : 'Inga noteringar än.'}
             </div>
           ) : (
-            <div className="divide-y divide-[var(--border)]">
+            <div className="divide-y divide-[var(--border)] rounded-xl border border-[var(--border)] bg-[var(--background-card)] px-5 shadow-[var(--shadow-sm)]">
               {(data?.notes ?? []).map(note => (
-                <article key={note.id} className="py-5 first:pt-0">
+                <article key={note.id} className="py-5">
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <time className="text-xs font-medium text-[var(--accent)]">{note.date}</time>
                     <a

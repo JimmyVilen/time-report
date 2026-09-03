@@ -48,15 +48,16 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    borderLeftColor: entry.tags[0]?.color ?? 'var(--accent)',
   }
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="group relative rounded-xl border border-[var(--border)] bg-[var(--background-card)] hover:bg-[var(--background-card-hover)] transition-colors"
+      className="time-entry-card group relative"
     >
-      <div className="flex items-start gap-3 px-4 py-3">
+      <div className="flex items-start gap-3 px-4 py-4 md:px-7 md:py-5">
         {/* Drag handle */}
         <button
           {...attributes}
@@ -71,7 +72,7 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
 
         {/* Main content */}
         <div className="min-w-0 flex-1">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+          <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-6">
 
             {/* Left: title + description */}
             <div className="min-w-0">
@@ -81,17 +82,17 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
                     href={entry.taskJiraUrl ?? '#'}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="shrink-0 text-xs font-medium text-[var(--accent)] hover:underline"
+                    className="time-entry-key shrink-0 font-display text-[var(--accent)] hover:underline"
                   >
                     [{entry.taskJiraKey}]
                   </a>
                 )}
-                <span className="text-sm font-medium text-[var(--foreground)] truncate">
+                <span className="time-entry-title font-display text-[var(--foreground-strong)] truncate">
                   {entry.taskTitle}
                 </span>
               </div>
               {entry.description && (
-                <div className="mt-0.5 text-sm text-[var(--foreground-muted)] line-clamp-3 [&_.prose-content]:text-sm [&_.prose-content]:text-[var(--foreground-muted)] [&_.prose-content_p]:mb-0 [&_.prose-content_h1]:text-sm [&_.prose-content_h2]:text-sm [&_.prose-content_h3]:text-sm">
+                <div className="time-entry-description mt-1 text-[var(--foreground-muted)] line-clamp-3 [&_.prose-content]:text-[inherit] [&_.prose-content]:text-[var(--foreground-muted)] [&_.prose-content_p]:mb-0 [&_.prose-content_h1]:text-[inherit] [&_.prose-content_h2]:text-[inherit] [&_.prose-content_h3]:text-[inherit]">
                   <MarkdownRenderer content={entry.description} />
                 </div>
               )}
@@ -101,7 +102,7 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
                     <span
                       key={tag.id}
                       style={tagColorStyle(tag.color)}
-                      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${!tag.color ? tagDefaultClass : ''}`}
+                      className={`tag-chip inline-flex items-center px-2 py-0.5 rounded ${!tag.color ? tagDefaultClass : ''}`}
                     >
                       {tag.name}
                     </span>
@@ -111,14 +112,14 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
             </div>
 
             {/* Right: actions + duration */}
-            <div className="flex shrink-0 items-center gap-3 text-right">
+            <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 text-right sm:justify-end">
 
               {/* Actions */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 {entry.taskJiraUrl && (
                   entry.isPushed ? (
                     <span
-                      className="rounded-lg p-1.5 text-[var(--success)] cursor-default"
+                      className="time-entry-action text-[var(--success)] cursor-default"
                       title={`Skickad till Jira${entry.pushedAt ? ' ' + entry.pushedAt.slice(0, 10) : ''}`}
                     >
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,7 +135,7 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
                         !entry.startTime ||
                         !entry.endTime
                       }
-                      className="rounded-lg p-1.5 text-[var(--foreground-muted)] hover:text-[var(--accent)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="time-entry-action disabled:opacity-50 disabled:cursor-not-allowed"
                       title={
                         entry.effectiveDurationMinutes <= 0
                           ? 'Ingen tid registrerad'
@@ -153,7 +154,7 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
                 <button
                   onClick={() => duplicateMutation.mutate()}
                   disabled={duplicateMutation.isPending}
-                  className="rounded-lg p-1.5 text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors disabled:opacity-50"
+                  className="time-entry-action disabled:opacity-50"
                   title="Duplicera"
                 >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,7 +164,7 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
 
                 <button
                   onClick={() => onEdit(entry)}
-                  className="rounded-lg p-1.5 text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors"
+                  className="time-entry-action"
                   title="Redigera"
                 >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,7 +175,7 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
                 <button
                   onClick={() => { if (confirm('Är du säker på att du vill radera denna tidsrapport?')) deleteMutation.mutate() }}
                   disabled={deleteMutation.isPending}
-                  className="rounded-lg p-1.5 text-[var(--foreground-muted)] hover:text-[var(--danger)] transition-colors disabled:opacity-50"
+                  className="time-entry-action hover:!text-[var(--danger)] hover:!border-[var(--danger)] disabled:opacity-50"
                   title="Radera"
                 >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,11 +185,11 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
               </div>
 
               {/* Duration */}
-              <div className="w-20">
-                <div className="text-sm font-semibold text-[var(--foreground)] text-right">
+              <div className="w-28">
+                <div className="time-entry-duration font-display text-[var(--foreground-strong)] text-right">
                   {entry.effectiveDurationMinutes > 0 ? formatMinutes(entry.effectiveDurationMinutes) : ''}
                 </div>
-                <div className="text-xs text-[var(--foreground-muted)] text-right">
+                <div className="time-entry-time mt-1 text-[var(--foreground-muted)] text-right">
                   {entry.startTime && entry.endTime
                     ? `${entry.startTime}–${entry.endTime}`
                     : entry.startTime

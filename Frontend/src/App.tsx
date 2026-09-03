@@ -87,9 +87,9 @@ export default function App() {
   if (route === 'setup') return <SetupPage />
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--background)]">
+    <div className="app-shell">
       <TopNav />
-      <main className="flex flex-1">
+      <main className="app-main flex">
         {route === 'dashboard' && <DashboardPage />}
         {route === 'projects' && <ProjectsPage />}
         {route === 'tasks' && <TasksPage />}

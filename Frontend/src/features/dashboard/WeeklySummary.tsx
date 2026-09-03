@@ -6,6 +6,7 @@ import { formatMinutes } from '../../lib/durationParser'
 interface Props {
   date: string
   onDateClick: (d: string) => void
+  todayMinutes: number
 }
 
 function formatDayLabel(dateStr: string): string {
@@ -13,54 +14,60 @@ function formatDayLabel(dateStr: string): string {
   return new Intl.DateTimeFormat('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' }).format(d)
 }
 
-export function WeeklySummary({ date, onDateClick }: Props) {
+export function WeeklySummary({ date, onDateClick, todayMinutes }: Props) {
   const monday = mondayOfWeek(date)
   const { data } = useQuery({
     queryKey: ['weekly-summary', monday],
     queryFn: () => getWeeklySummary(date),
   })
 
+  const completion = Math.min(100, Math.round(((data?.totalMinutes ?? 0) / (40 * 60)) * 100))
+
   return (
-    <aside className="w-full shrink-0 lg:w-72">
-      <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-card)] p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <span className="text-xs font-semibold uppercase tracking-wide text-[var(--foreground-muted)]">
-            Vecka {data?.weekNumber}
-          </span>
-          <span className="text-xs text-[var(--foreground-muted)]">
-            {formatMinutes(data?.totalMinutes ?? 0)} totalt
-          </span>
+    <section className="week-overview" aria-label={`Vecka ${data?.weekNumber ?? ''}`}>
+      <div className="week-overview-top">
+        <div className="week-caption">
+          <strong>Vecka {data?.weekNumber}</strong>
+          <span className="divider" aria-hidden="true" />
+          <span>{formatMinutes(data?.totalMinutes ?? 0)} totalt</span>
         </div>
 
-        <div className="space-y-1">
+        <div className="summary-instruments">
+          <div className="summary-instrument">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+            <small>Idag</small>
+            <span>{formatMinutes(todayMinutes)}</span>
+          </div>
+          <div className="summary-instrument">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M8 3v4M16 3v4M3 10h18" /></svg>
+            <small>Vecka {data?.weekNumber}</small>
+            <span>{formatMinutes(data?.totalMinutes ?? 0)}</span>
+          </div>
+          <div className="summary-instrument">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 3a9 9 0 0 1 8.4 5.8" /></svg>
+            <small>Klargrad</small>
+            <span>{completion} %</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="week-strip">
           {(data?.days ?? []).map(day => {
             const isSelected = day.date === date
             return (
               <button
                 key={day.date}
                 onClick={() => onDateClick(day.date)}
-                className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors ${
-                  isSelected
-                    ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
-                    : 'text-[var(--foreground-muted)] hover:bg-[var(--background-elevated)] hover:text-[var(--foreground)]'
-                }`}
+                className={`week-day ${isSelected ? 'is-selected' : ''}`}
+                aria-pressed={isSelected}
               >
-                <div className="flex items-center gap-2">
-                  <span className="w-24 capitalize font-medium text-left">{formatDayLabel(day.date)}</span>
-                  {day.firstStart && day.lastEnd && (
-                    <span className="text-xs text-[var(--foreground-muted)]">
-                      {day.firstStart}–{day.lastEnd}
-                    </span>
-                  )}
-                </div>
-                <span className={day.totalMinutes > 0 ? 'text-[var(--foreground)]' : 'text-[var(--foreground-muted)]'}>
-                  {day.totalMinutes > 0 ? formatMinutes(day.totalMinutes) : '–'}
-                </span>
+                <span className="week-day-name">{new Intl.DateTimeFormat('sv-SE', { weekday: 'short' }).format(new Date(day.date + 'T00:00:00')).replace('.', '')}</span>
+                <span className="week-day-date">{formatDayLabel(day.date).replace(/^\S+\s/, '')}</span>
+                <span className="week-day-total">{day.totalMinutes > 0 ? formatMinutes(day.totalMinutes) : '–'}</span>
               </button>
             )
           })}
-        </div>
       </div>
-    </aside>
+    </section>
   )
 }

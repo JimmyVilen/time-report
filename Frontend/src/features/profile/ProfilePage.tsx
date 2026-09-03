@@ -56,8 +56,9 @@ export function ProfilePage() {
   return (
     <div className="flex-1 p-4 md:p-6 max-w-app mx-auto w-full">
       <h1 className="mb-8 text-xl font-semibold text-[var(--foreground)]">Profil</h1>
+      <p className="page-intro">Hantera konto, säkerhet, integrationer och databas.</p>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="rounded-xl border border-[var(--border)] bg-[var(--background-card)] px-6 shadow-[var(--shadow-sm)]">
         <div className="divide-y divide-[var(--border)]">
 
           {/* Kontoinformation */}
@@ -168,7 +169,7 @@ export function ProfilePage() {
         {error && <p className="mt-4 text-sm text-[var(--danger)]">{error}</p>}
         {success && <p className="mt-4 text-sm text-[var(--success)]">{success}</p>}
 
-        <div className="pt-4">
+        <div className="border-t border-[var(--border)] py-6">
           <button
             type="submit"
             disabled={mutation.isPending}

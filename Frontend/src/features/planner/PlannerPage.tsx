@@ -127,6 +127,8 @@ export function PlannerPage() {
 
   return (
     <div className="flex-1 p-4 md:p-6 max-w-app mx-auto w-full">
+      <h1 className="mb-8 text-xl font-semibold text-[var(--foreground)]">Planering</h1>
+      <p className="page-intro">Forma veckan visuellt och omvandla planerade block till uppgifter.</p>
       {/* Header */}
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="flex items-center gap-2">
@@ -164,7 +166,7 @@ export function PlannerPage() {
 
       {/* Converted notification */}
       {convertedId !== null && (
-        <div className="mb-3 px-3 py-2 rounded-lg bg-green-100 text-green-800 text-sm border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800">
+        <div className="mb-3 px-3 py-2 rounded-lg bg-[var(--accent-soft)] text-[var(--accent)] text-sm border border-[#c8dad5]">
           Uppgift skapad
         </div>
       )}

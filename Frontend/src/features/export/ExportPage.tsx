@@ -68,9 +68,10 @@ export function ExportPage() {
   return (
     <div className="flex-1 p-4 md:p-6 max-w-app mx-auto w-full">
       <h1 className="mb-8 text-xl font-semibold text-[var(--foreground)]">Exportera</h1>
+      <p className="page-intro">Hämta tid och noteringar som CSV för valda datumintervall.</p>
 
-      <div className="divide-y divide-[var(--border)]">
-        <div className="pb-8">
+      <div className="divide-y divide-[var(--border)] rounded-xl border border-[var(--border)] bg-[var(--background-card)] px-6 shadow-[var(--shadow-sm)]">
+        <div className="py-7">
           <ExportSection
             title="Tidsrapport"
             subtitle="Exportera tidrapportsposter som CSV"
@@ -79,7 +80,7 @@ export function ExportPage() {
             onExport={() => exportTimeEntries(teFrom, teTo)}
           />
         </div>
-        <div className="pt-8">
+        <div className="py-7">
           <ExportSection
             title="Noteringar"
             subtitle="Exportera dagliga noteringar som CSV"

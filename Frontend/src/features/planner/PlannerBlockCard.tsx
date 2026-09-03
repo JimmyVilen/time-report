@@ -129,7 +129,7 @@ export function PlannerBlockCard({ block, onEdit, onDelete, onUpdate, onConvert 
   return (
     <div
       data-planner-block
-      className="absolute left-1 right-1 rounded select-none"
+      className="absolute left-1 right-1 rounded select-none shadow-[0_4px_12px_rgba(27,43,38,0.06)]"
       style={{
         top: topPx,
         height: heightPx,

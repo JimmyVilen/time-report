@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useRef, useState } from 'react'
 import type { Tag } from '../api/tags'
 
@@ -55,7 +56,7 @@ export function TagInput({ label, selectedTags, availableTags, onAdd, onRemove, 
             <span
               key={tag.id}
               style={tagColorStyle(tag.color)}
-              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${!tag.color ? tagDefaultClass : ''}`}
+              className={`tag-chip inline-flex items-center gap-1 px-2 py-0.5 rounded ${!tag.color ? tagDefaultClass : ''}`}
             >
               {tag.name}
               <button
@@ -85,12 +86,12 @@ export function TagInput({ label, selectedTags, availableTags, onAdd, onRemove, 
               <button
                 key={tag.id}
                 type="button"
-                className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--background-card-hover)] text-[var(--foreground)] flex items-center gap-2"
+                className="form-list-option w-full text-left px-3 py-2 hover:bg-[var(--background-card-hover)] text-[var(--foreground)] flex items-center gap-2"
                 onMouseDown={() => { onAdd(tag); setInputValue(''); setOpen(false) }}
               >
                 <span
                   style={tagColorStyle(tag.color)}
-                  className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${!tag.color ? tagDefaultClass : ''}`}
+                  className={`tag-chip inline-flex items-center px-2 py-0.5 rounded ${!tag.color ? tagDefaultClass : ''}`}
                 >
                   {tag.name}
                 </span>
@@ -100,7 +101,7 @@ export function TagInput({ label, selectedTags, availableTags, onAdd, onRemove, 
               <button
                 type="button"
                 disabled={creating}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-[var(--background-card-hover)] text-[var(--accent)] disabled:opacity-50"
+                className="form-list-option w-full text-left px-3 py-2 hover:bg-[var(--background-card-hover)] text-[var(--accent)] disabled:opacity-50"
                 onMouseDown={async () => {
                   const name = inputValue.trim()
                   setInputValue('')

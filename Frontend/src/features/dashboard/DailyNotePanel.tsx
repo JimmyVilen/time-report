@@ -38,7 +38,7 @@ export function DailyNotePanel({ date }: Props) {
     <>
       <button
         onClick={() => setIsOpen(s => !s)}
-        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[var(--border)] bg-[var(--background-card)] hover:bg-[var(--background-elevated)] text-sm font-medium text-[var(--foreground)] transition-colors"
+        className="inline-flex min-h-[46px] items-center justify-center gap-2 px-5 py-2 rounded-md border border-[var(--border)] bg-[var(--background-card)] hover:border-[var(--accent)] hover:text-[var(--accent)] text-sm font-semibold text-[var(--foreground)] transition-colors"
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -50,7 +50,7 @@ export function DailyNotePanel({ date }: Props) {
       </button>
 
       {isOpen && (
-        <div className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-card)] p-4">
+        <div className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-card)] p-5 shadow-[var(--shadow-sm)]">
           <div className="flex flex-col gap-3">
             <LexicalMarkdownEditor
               value={content}
