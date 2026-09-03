@@ -20,14 +20,14 @@ Time reporting app built with Hono, PostgreSQL, React and TypeScript. The legacy
 
 **Terminal 1 – PostgreSQL:**
 ```bash
-docker run --rm --name timereport-postgres -e POSTGRES_USER=timereport -e POSTGRES_PASSWORD=timereport -e POSTGRES_DB=timereport -p 5432:5432 postgres:17-alpine
+docker compose up -d db
 ```
 
 **Terminal 2 – Backend:**
 ```bash
 cd Backend/TimeReport.Api.Ts
 npm install
-# Export the values shown in .env.example, then:
+cp .env.example .env
 npm run db:migrate
 npm run dev
 ```
