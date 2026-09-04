@@ -142,6 +142,7 @@ function normalizeAndValidate(table: string, row: Row): void {
       row[field] = toDate(row[field])
 }
 function toDate(value: unknown): Date {
+  if (value instanceof Date) return value
   const raw = String(value)
   const normalized = /(?:Z|[+-]\d\d:\d\d)$/.test(raw)
     ? raw
