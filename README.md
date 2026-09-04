@@ -1,6 +1,6 @@
 # TimeReport
 
-Time reporting app built with Hono, PostgreSQL, React and TypeScript. The legacy ASP.NET Core/SQLite backend remains in `Backend/TimeReport.Api` during the rollback period.
+Time reporting app built with Hono, PostgreSQL, React and TypeScript.
 
 ## Tech Stack
 
@@ -63,22 +63,23 @@ The Compose migration service exits before the app starts. Production injects a 
 ## Project Structure
 
 ```
-src/
-├─ Backend/
-│  ├─ TimeReport.Api/          ASP.NET Core API
-│  │  ├─ Controllers/          API endpoints
-│  │  ├─ Data/
-│  │  │  ├─ Entities/          EF Core entities
-│  │  │  └─ AppDbContext.cs
-│  │  ├─ Services/             DurationParser, TimeEntryResolver, JiraService
-│  │  └─ wwwroot/              Vite build (auto-generated)
-│  └─ TimeReport.Api.Tests/    Unit tests
-└─ Frontend/
-   └─ src/
-      ├─ api/                  Fetch wrappers per resource
-      ├─ components/           Shared UI components
-      ├─ features/             Feature modules (dashboard, projects, tasks...)
-      └─ lib/                  Helper functions (durationParser, dateUtils...)
+Backend/
+├─ src/
+│  ├─ routes/                 One Hono router per resource
+│  ├─ auth/                   Better Auth setup and session middleware
+│  ├─ db/                     Drizzle schema and client
+│  ├─ services/               duration, time-entry-resolver, jira, csv
+│  └─ index.node.ts           Server entry, static files and SPA fallback
+├─ drizzle/                   Generated SQL migrations
+├─ scripts/db/                migrate, seed and test-database tooling
+├─ test/                      Vitest suites
+└─ docs/contract-inventory.md Full API contract
+Frontend/
+└─ src/
+   ├─ api/                    Fetch wrappers per resource
+   ├─ components/             Shared UI components
+   ├─ features/               Feature modules (dashboard, projects, tasks...)
+   └─ lib/                    Helper functions (durationParser, dateUtils...)
 ```
 
 ## API Endpoints
@@ -106,27 +107,24 @@ src/
 | POST | /api/time-entries/{id}/push-to-jira | Push worklog to Jira |
 | GET | /api/time-entries/export?from=&to= | CSV export |
 
-## Known Differences from Rails Version
-
-| Rails | New Stack | Notes |
-|---|---|---|
-| Turbo Streams | TanStack Query invalidation | Automatic re-fetch on mutation |
-| Hotwire drag-and-drop | @dnd-kit/sortable | Similar UX |
-| EasyMDE markdown editor | Simple textarea + react-markdown | Can be extended with react-simplemde-editor |
-| I18n day names | Intl.DateTimeFormat('sv-SE') | Built into the browser |
-| Rails flash messages | Inline error messages in forms | |
-| Server-side markdown | react-markdown (client-side) | |
+Projects, tasks, tags, daily notes, planner and profile follow the same shape; see `Backend/docs/contract-inventory.md` for the full contract.
 
 ## Tests
 
 ```bash
-# Run unit tests
 cd Backend
 npm run typecheck
 npm run lint
+npm run format:check
 npm test
 ```
 
-Tests cover:
-- `DurationParser` – parsing "1h 30m", "90m", "1.5h" etc.
-- `TimeEntryResolverService` – start+end→duration, start+duration→end, etc.
+Unit and route tests run without a database. The PostgreSQL contract suite is
+skipped unless `TEST_DATABASE_URL` is set; it deliberately refuses to fall back
+to `DATABASE_URL`, so it can never touch a development or production database.
+
+```bash
+cd Backend
+NODE_ENV=test TEST_DATABASE_URL=postgresql://... npm run db:reset:test
+NODE_ENV=test TEST_DATABASE_URL=postgresql://... npm test
+```
