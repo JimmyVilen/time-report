@@ -15,7 +15,8 @@ import { Input } from '../../components/Input'
 
 export function ProjectsPage() {
   const qc = useQueryClient()
-  const { data: projects = [] } = useQuery({ queryKey: ['projects'], queryFn: getProjects })
+  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects })
+  const projects = projectsQuery.data ?? []
   const [tab, setTab] = useState<'active' | 'archived'>('active')
   const [showForm, setShowForm] = useState(false)
   const [editProject, setEditProject] = useState<Project | null>(null)
@@ -94,7 +95,15 @@ export function ProjectsPage() {
       </div>
 
       <div className="flex flex-col gap-3">
-        {filtered.length === 0 && (
+        {projectsQuery.isPending && (
+          <p className="text-sm text-[var(--foreground-muted)] text-center py-8">Laddar projekt…</p>
+        )}
+        {projectsQuery.isError && (
+          <p className="text-sm text-[var(--danger)] text-center py-8">
+            Kunde inte hämta projekt: {projectsQuery.error.message}
+          </p>
+        )}
+        {projectsQuery.isSuccess && filtered.length === 0 && (
           <p className="text-sm text-[var(--foreground-muted)] text-center py-8">Inga projekt.</p>
         )}
         {filtered.map(p => (

@@ -20,8 +20,8 @@ const projectSelection = {
   isArchived: projects.isArchived,
   createdAt: projects.createdAt,
   updatedAt: projects.updatedAt,
-  taskCount: sql<number>`(select count(*)::int from tasks t where t.project_id = ${projects.id} and not t.is_archived)`,
-  totalMinutes: sql<number>`coalesce((select sum(case when e.start_time is not null and e.end_time is not null then round(extract(epoch from (e.end_time-e.start_time))/60) else coalesce(e.duration_minutes,0) end)::int from time_entries e join tasks t on t.id=e.task_id where t.project_id=${projects.id}),0)`,
+  taskCount: sql<number>`(select count(*)::int from tasks t where t.project_id = projects.id and t.user_id = projects.user_id and not t.is_archived)`,
+  totalMinutes: sql<number>`coalesce((select sum(case when e.start_time is not null and e.end_time is not null then round(extract(epoch from (e.end_time-e.start_time))/60) else coalesce(e.duration_minutes,0) end)::int from time_entries e join tasks t on t.id=e.task_id where t.project_id=projects.id and t.user_id=projects.user_id and e.user_id=projects.user_id),0)`,
 }
 type ProjectRow = typeof projects.$inferSelect & {
   taskCount: number

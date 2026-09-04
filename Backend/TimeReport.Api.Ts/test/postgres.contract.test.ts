@@ -55,6 +55,17 @@ suite('PostgreSQL contracts', () => {
       }),
     ])
   })
+  it('loads owned projects and totals', async () => {
+    const response = await app.request('/api/projects', { headers: { cookie } })
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual([
+      expect.objectContaining({
+        name: 'Client',
+        taskCount: 1,
+        totalMinutes: 60,
+      }),
+    ])
+  })
   it("cannot delete another user's tag", async () => {
     expect(
       (
