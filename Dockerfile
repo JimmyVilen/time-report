@@ -6,18 +6,18 @@ COPY Frontend/ ./
 RUN npm run build
 
 FROM node:24-alpine AS backend-build
-WORKDIR /build/Backend/TimeReport.Api.Ts
-COPY Backend/TimeReport.Api.Ts/package*.json ./
+WORKDIR /build/Backend
+COPY Backend/package*.json ./
 RUN npm ci
-COPY Backend/TimeReport.Api.Ts/ ./
+COPY Backend/ ./
 RUN npm run build && npm prune --omit=dev
 
 FROM node:24-alpine AS runtime
-WORKDIR /app/Backend/TimeReport.Api.Ts
+WORKDIR /app/Backend
 ENV NODE_ENV=production PORT=8080
-COPY --chown=node:node --from=backend-build /build/Backend/TimeReport.Api.Ts/package*.json ./
-COPY --chown=node:node --from=backend-build /build/Backend/TimeReport.Api.Ts/node_modules ./node_modules
-COPY --chown=node:node --from=backend-build /build/Backend/TimeReport.Api.Ts/dist ./dist
+COPY --chown=node:node --from=backend-build /build/Backend/package*.json ./
+COPY --chown=node:node --from=backend-build /build/Backend/node_modules ./node_modules
+COPY --chown=node:node --from=backend-build /build/Backend/dist ./dist
 COPY --chown=node:node --from=frontend-build /build/Frontend/dist /app/Frontend/dist
 USER node
 EXPOSE 8080

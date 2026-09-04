@@ -20,7 +20,6 @@
     "db:seed": "node --env-file-if-exists=.env --import tsx scripts/db/seed.ts",
     "db:seed:test": "node --env-file-if-exists=.env --import tsx scripts/db/seed-test.ts",
     "db:reset:test": "node --env-file-if-exists=.env --import tsx scripts/db/reset-test.ts",
-    "db:migrate:sqlite": "node --env-file-if-exists=.env --import tsx scripts/db/migrate-sqlite-to-postgres.ts",
     "db:bootstrap": "npm run db:migrate && npm run db:seed"
   },
   "dependencies": {

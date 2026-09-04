@@ -21,7 +21,7 @@ const app = new Hono()
 app.route('/', api)
 
 if (config.NODE_ENV === 'production') {
-  const root = '../../Frontend/dist'
+  const root = '../Frontend/dist'
   app.use('/assets/*', async (context, next) => {
     context.header('cache-control', 'public, max-age=31536000, immutable')
     await next()

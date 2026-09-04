@@ -1,0 +1,16 @@
+# Normalize all text files to LF in the repository and in the working tree on
+# every platform. This overrides a user's global core.autocrlf, so a Windows
+# checkout matches Linux and macOS byte for byte and Prettier's default
+# endOfLine: "lf" holds everywhere.
+* text=auto eol=lf
+
+# Binary files: never touch, never try to diff as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.db binary
