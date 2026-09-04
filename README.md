@@ -25,7 +25,7 @@ docker compose up -d db
 
 **Terminal 2 – Backend:**
 ```bash
-cd Backend/TimeReport.Api.Ts
+cd Backend
 npm install
 cp .env.example .env
 npm run db:migrate
@@ -46,7 +46,7 @@ Open http://localhost:5173 in your browser.
 
 ```bash
 cd Frontend && npm run build
-cd ../Backend/TimeReport.Api.Ts && npm run build
+cd ../Backend && npm run build
 ```
 
 ### Docker
@@ -121,7 +121,7 @@ src/
 
 ```bash
 # Run unit tests
-cd Backend/TimeReport.Api.Ts
+cd Backend
 npm run typecheck
 npm run lint
 npm test
