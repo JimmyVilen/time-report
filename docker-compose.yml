@@ -25,7 +25,7 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://timereport:${POSTGRES_PASSWORD:-timereport}@db:5432/timereport
-    command: ["npm", "run", "db:migrate"]
+    command: ["pnpm", "--filter", "@time-report/api", "run", "db:migrate"]
     restart: "no"
 
   app:

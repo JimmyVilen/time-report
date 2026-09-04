@@ -14,6 +14,7 @@ Time reporting app built with Hono, PostgreSQL, React and TypeScript.
 ### Requirements
 
 - Node.js 24+
+- pnpm 10+ (`npm install -g pnpm`)
 - Docker for local PostgreSQL
 
 ### Running in Development
@@ -23,30 +24,27 @@ Time reporting app built with Hono, PostgreSQL, React and TypeScript.
 docker compose up -d db
 ```
 
-**Terminal 2 – Backend:**
+**Terminal 2 – app (first-time setup):**
 ```bash
-cd Backend
-npm install
-cp .env.example .env
-npm run db:migrate
-npm run dev
+pnpm install
+cp Backend/.env.example Backend/.env
+pnpm db:migrate
 ```
 
-**Terminal 3 – Frontend:**
+Then, from the repository root:
 ```bash
-cd Frontend
-npm install
-npm run dev
-# Frontend at http://localhost:5173 (proxies /api → Hono :3000)
+pnpm dev
 ```
 
-Open http://localhost:5173 in your browser.
+That starts the Hono API on :3000 and Vite on :5173 in a single terminal, with
+output prefixed per package. Ctrl+C stops both.
+
+Open http://localhost:5173 in your browser (Vite proxies /api → Hono :3000).
 
 ### Building for Production
 
 ```bash
-cd Frontend && npm run build
-cd ../Backend && npm run build
+pnpm build
 ```
 
 ### Docker
@@ -112,11 +110,10 @@ Projects, tasks, tags, daily notes, planner and profile follow the same shape; s
 ## Tests
 
 ```bash
-cd Backend
-npm run typecheck
-npm run lint
-npm run format:check
-npm test
+pnpm typecheck
+pnpm lint
+pnpm format:check
+pnpm test
 ```
 
 Unit and route tests run without a database. The PostgreSQL contract suite is
@@ -125,6 +122,6 @@ to `DATABASE_URL`, so it can never touch a development or production database.
 
 ```bash
 cd Backend
-NODE_ENV=test TEST_DATABASE_URL=postgresql://... npm run db:reset:test
-NODE_ENV=test TEST_DATABASE_URL=postgresql://... npm test
+NODE_ENV=test TEST_DATABASE_URL=postgresql://... pnpm run db:reset:test
+NODE_ENV=test TEST_DATABASE_URL=postgresql://... pnpm test
 ```
