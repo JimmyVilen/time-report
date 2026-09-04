@@ -367,7 +367,7 @@ label {
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 20px;
+  gap: 14px;
 }
 
 .date-navigation .date-arrow {
@@ -398,7 +398,7 @@ label {
 
 .date-heading h1 {
   margin: 0;
-  font-size: clamp(2.65rem, 4vw, 3.65rem);
+  font-size: clamp(2.2rem, 3.25vw, 3rem);
   font-weight: 680;
   white-space: nowrap;
 }
@@ -427,6 +427,10 @@ label {
   font-weight: 650;
   letter-spacing: 0.01em;
   line-height: 1;
+}
+
+.page-create-action {
+  font-size: 1.06rem;
 }
 
 .week-overview {
@@ -590,7 +594,7 @@ label {
 .dashboard-stack {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 
 .dashboard-empty-state {

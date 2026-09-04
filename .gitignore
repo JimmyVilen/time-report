@@ -1,2 +1,4 @@
 db/*
 .idea/
+Backend/TimeReport.Api/*.db
+Backend/TimeReport.Api.Ts/*.db*

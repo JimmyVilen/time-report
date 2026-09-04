@@ -85,7 +85,7 @@ export function TasksPage() {
     <div className="flex-1 p-4 md:p-6 max-w-app mx-auto w-full">
       <div className="flex items-center justify-between mb-6 gap-4">
         <h1 className="text-xl font-semibold text-[var(--foreground)]">Uppgifter</h1>
-        <Button variant="primary" onClick={() => { setShowForm(s => !s); setEditTask(null); setTitle(''); setDesc(''); setJiraUrl(''); setProjectId(''); setDefaultTags([]) }}>
+        <Button variant="primary" className="page-create-action" onClick={() => { setShowForm(s => !s); setEditTask(null); setTitle(''); setDesc(''); setJiraUrl(''); setProjectId(''); setDefaultTags([]) }}>
           + Ny uppgift
         </Button>
       </div>

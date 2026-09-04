@@ -15,7 +15,8 @@ import { Input } from '../../components/Input'
 
 export function ProjectsPage() {
   const qc = useQueryClient()
-  const { data: projects = [] } = useQuery({ queryKey: ['projects'], queryFn: getProjects })
+  const projectsQuery = useQuery({ queryKey: ['projects'], queryFn: getProjects })
+  const projects = projectsQuery.data ?? []
   const [tab, setTab] = useState<'active' | 'archived'>('active')
   const [showForm, setShowForm] = useState(false)
   const [editProject, setEditProject] = useState<Project | null>(null)
@@ -58,7 +59,7 @@ export function ProjectsPage() {
     <div className="flex-1 p-4 md:p-6 max-w-app mx-auto w-full">
       <div className="flex items-center justify-between mb-6 gap-4">
         <h1 className="text-xl font-semibold text-[var(--foreground)]">Projekt</h1>
-        <Button variant="primary" onClick={() => { setShowForm(s => !s); setEditProject(null); setName(''); setDescription('') }}>
+        <Button variant="primary" className="page-create-action" onClick={() => { setShowForm(s => !s); setEditProject(null); setName(''); setDescription('') }}>
           + Nytt projekt
         </Button>
       </div>
@@ -94,7 +95,15 @@ export function ProjectsPage() {
       </div>
 
       <div className="flex flex-col gap-3">
-        {filtered.length === 0 && (
+        {projectsQuery.isPending && (
+          <p className="text-sm text-[var(--foreground-muted)] text-center py-8">Laddar projekt…</p>
+        )}
+        {projectsQuery.isError && (
+          <p className="text-sm text-[var(--danger)] text-center py-8">
+            Kunde inte hämta projekt: {projectsQuery.error.message}
+          </p>
+        )}
+        {projectsQuery.isSuccess && filtered.length === 0 && (
           <p className="text-sm text-[var(--foreground-muted)] text-center py-8">Inga projekt.</p>
         )}
         {filtered.map(p => (

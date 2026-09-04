@@ -1,36 +1,43 @@
 # TimeReport
 
-Time reporting app built with ASP.NET Core + React + TypeScript.
+Time reporting app built with Hono, PostgreSQL, React and TypeScript. The legacy ASP.NET Core/SQLite backend remains in `Backend/TimeReport.Api` during the rollback period.
 
 ## Tech Stack
 
-- **Backend**: ASP.NET Core .NET 10, Entity Framework Core, SQLite
+- **Backend**: Node.js 24, Hono, Drizzle ORM, PostgreSQL
 - **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4, TanStack Query
-- **Auth**: Cookie-based auth (HttpOnly, SameSite=Lax)
-- **Deploy**: Single-container with Vite built to wwwroot
+- **Auth**: Better Auth, BCrypt and HttpOnly/SameSite=Lax cookie sessions
+- **Deploy**: Single non-root Node container serving the Vite build
 
 ## Getting Started
 
 ### Requirements
 
-- .NET 10 SDK
 - Node.js 24+
+- Docker for local PostgreSQL
 
 ### Running in Development
 
-**Terminal 1 – Backend:**
+**Terminal 1 – PostgreSQL:**
 ```bash
-cd src/Backend/TimeReport.Api
-dotnet run
-# API available at http://localhost:5231
+docker compose up -d db
 ```
 
-**Terminal 2 – Frontend:**
+**Terminal 2 – Backend:**
 ```bash
-cd src/Frontend
+cd Backend/TimeReport.Api.Ts
+npm install
+cp .env.example .env
+npm run db:migrate
+npm run dev
+```
+
+**Terminal 3 – Frontend:**
+```bash
+cd Frontend
 npm install
 npm run dev
-# Frontend at http://localhost:5173 (proxies /api → backend)
+# Frontend at http://localhost:5173 (proxies /api → Hono :3000)
 ```
 
 Open http://localhost:5173 in your browser.
@@ -38,28 +45,20 @@ Open http://localhost:5173 in your browser.
 ### Building for Production
 
 ```bash
-# Build frontend (writes to src/Backend/TimeReport.Api/wwwroot)
-cd src/Frontend && npm run build
-
-# Run backend (serves frontend via wwwroot)
-cd src/Backend/TimeReport.Api && dotnet run
-# Open http://localhost:5231
+cd Frontend && npm run build
+cd ../Backend/TimeReport.Api.Ts && npm run build
 ```
 
 ### Docker
 
 ```bash
 # Build and run
-docker compose up --build
+BETTER_AUTH_SECRET="replace-with-at-least-32-random-characters" docker compose up --build
 
 # App available at http://localhost:8080
 ```
 
-Copy the database to the data folder on first run:
-```bash
-mkdir data
-cp db/local.db data/timereport.db
-```
+The Compose migration service exits before the app starts. Production injects a Supabase `DATABASE_URL`; database backup/restore is infrastructure, not a web endpoint.
 
 ## Project Structure
 
@@ -122,7 +121,10 @@ src/
 
 ```bash
 # Run unit tests
-dotnet test src/Backend/TimeReport.Api.Tests/
+cd Backend/TimeReport.Api.Ts
+npm run typecheck
+npm run lint
+npm test
 ```
 
 Tests cover:
