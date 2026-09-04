@@ -429,6 +429,10 @@ label {
   line-height: 1;
 }
 
+.page-create-action {
+  font-size: 1.06rem;
+}
+
 .week-overview {
   margin-bottom: 16px;
 }

@@ -59,7 +59,7 @@ export function ProjectsPage() {
     <div className="flex-1 p-4 md:p-6 max-w-app mx-auto w-full">
       <div className="flex items-center justify-between mb-6 gap-4">
         <h1 className="text-xl font-semibold text-[var(--foreground)]">Projekt</h1>
-        <Button variant="primary" onClick={() => { setShowForm(s => !s); setEditProject(null); setName(''); setDescription('') }}>
+        <Button variant="primary" className="page-create-action" onClick={() => { setShowForm(s => !s); setEditProject(null); setName(''); setDescription('') }}>
           + Nytt projekt
         </Button>
       </div>
