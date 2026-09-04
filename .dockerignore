@@ -1,8 +1,4 @@
 .git
 **/node_modules
 **/dist
-**/bin
-**/obj
 **/*.db
-Backend/TimeReport.Api
-Backend/TimeReport.Api.Tests
