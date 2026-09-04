@@ -57,7 +57,7 @@ export function TimeEntryCard({ entry, date, onEdit }: Props) {
       style={style}
       className="time-entry-card group relative"
     >
-      <div className="flex items-start gap-3 px-4 py-4 md:px-7 md:py-5">
+      <div className="flex items-start gap-3 px-4 py-3.5 md:px-6 md:py-4">
         {/* Drag handle */}
         <button
           {...attributes}
