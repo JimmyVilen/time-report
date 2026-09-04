@@ -118,7 +118,6 @@ export function authRoutes(db: Database, auth: Auth) {
       .limit(1)
     return user ? context.json(userDto(user)) : context.body(null, 401)
   })
-  app.all('/better-auth/*', (context) => auth.handler(context.req.raw))
   return app
 }
 
