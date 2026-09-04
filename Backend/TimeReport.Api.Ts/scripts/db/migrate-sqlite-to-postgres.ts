@@ -2,6 +2,10 @@ import { resolve } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import postgres from 'postgres'
 import { productionDatabaseUrl } from './environment.js'
+import {
+  toAuditDate,
+  toPostgresLocalTimestamp,
+} from './sqlite-timestamps.js'
 
 type Row = Record<string, unknown>
 const tableOrder = [
@@ -29,6 +33,10 @@ const booleanFields: Record<string, string[]> = {
   projects: ['is_archived'],
   tasks: ['is_archived', 'is_favorite'],
 }
+const localTimestampFields: Record<string, string[]> = {
+  time_entries: ['start_time', 'end_time'],
+  planner_blocks: ['start_time', 'end_time'],
+}
 
 const args = process.argv.slice(2)
 const sourceIndex = args.indexOf('--source')
@@ -37,6 +45,15 @@ if (!sourceArgument)
   throw new Error('Usage: --source <sqlite-file> [--dry-run]')
 const sourcePath = resolve(sourceArgument)
 const dryRun = args.includes('--dry-run')
+const timeZoneIndex = args.indexOf('--time-zone')
+const timeZoneArgument =
+  timeZoneIndex < 0 ? undefined : args[timeZoneIndex + 1]
+if (timeZoneIndex >= 0 && !timeZoneArgument)
+  throw new Error(
+    'Usage: --source <sqlite-file> [--dry-run] [--time-zone <iana-zone>]',
+  )
+const timeZone = timeZoneArgument ?? 'Europe/Stockholm'
+new Intl.DateTimeFormat('en', { timeZone })
 const source = new DatabaseSync(sourcePath, { readOnly: true })
 
 try {
@@ -90,8 +107,8 @@ try {
           issuer: 'local:credential',
           user_id: Number(row['id']),
           password: String(row['password_hash']),
-          created_at: toDate(row['created_at']),
-          updated_at: toDate(row['updated_at']),
+          created_at: toAuditDate(row['created_at']),
+          updated_at: toAuditDate(row['updated_at']),
         }))
       if (credentialAccounts.length)
         await tx`insert into accounts ${tx(credentialAccounts as never)}`
@@ -131,6 +148,15 @@ function normalizeAndValidate(table: string, row: Row): void {
       row[field] = Number(row[field]) !== 0
   if ('date' in row && !/^\d{4}-\d{2}-\d{2}$/.test(String(row['date'])))
     throw new Error(`${table} id=${String(row['id'])} has an invalid date`)
+  for (const field of localTimestampFields[table] ?? [])
+    if (row[field] !== null && row[field] !== undefined)
+      try {
+        row[field] = toPostgresLocalTimestamp(row[field], timeZone)
+      } catch {
+        throw new Error(
+          `${table} id=${String(row['id'])} has an invalid ${field}`,
+        )
+      }
   for (const field of [
     'created_at',
     'updated_at',
@@ -139,16 +165,11 @@ function normalizeAndValidate(table: string, row: Row): void {
     'pushed_at',
   ])
     if (row[field] !== null && row[field] !== undefined)
-      row[field] = toDate(row[field])
-}
-function toDate(value: unknown): Date {
-  if (value instanceof Date) return value
-  const raw = String(value)
-  const normalized = /(?:Z|[+-]\d\d:\d\d)$/.test(raw)
-    ? raw
-    : `${raw.replace(' ', 'T')}Z`
-  const date = new Date(normalized)
-  if (Number.isNaN(date.getTime()))
-    throw new Error('Invalid audit timestamp in SQLite source')
-  return date
+      try {
+        row[field] = toAuditDate(row[field])
+      } catch {
+        throw new Error(
+          `${table} id=${String(row['id'])} has an invalid ${field}`,
+        )
+      }
 }
