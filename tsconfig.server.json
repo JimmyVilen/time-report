@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.server.tsbuildinfo",
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "types": ["node", "vitest/globals"]
+  },
+  "include": [
+    "src/server",
+    "test",
+    "scripts",
+    "drizzle.config.ts",
+    "vite.config.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": []
+}
