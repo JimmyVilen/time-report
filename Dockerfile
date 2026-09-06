@@ -1,24 +1,22 @@
-FROM node:24-alpine AS frontend-build
-WORKDIR /build/Frontend
-COPY Frontend/package*.json ./
+# Shared stage: full dependency tree plus the built app. docker-compose targets
+# this stage for the migration job, which needs tsx and scripts/db from devDeps.
+FROM node:24-alpine AS build
+WORKDIR /build
+COPY package*.json ./
 RUN npm ci
-COPY Frontend/ ./
+COPY . ./
 RUN npm run build
 
-FROM node:24-alpine AS backend-build
-WORKDIR /build/Backend
-COPY Backend/package*.json ./
-RUN npm ci
-COPY Backend/ ./
-RUN npm run build && npm prune --omit=dev
+FROM build AS prune
+RUN npm prune --omit=dev
 
 FROM node:24-alpine AS runtime
-WORKDIR /app/Backend
+WORKDIR /app
 ENV NODE_ENV=production PORT=8080
-COPY --chown=node:node --from=backend-build /build/Backend/package*.json ./
-COPY --chown=node:node --from=backend-build /build/Backend/node_modules ./node_modules
-COPY --chown=node:node --from=backend-build /build/Backend/dist ./dist
-COPY --chown=node:node --from=frontend-build /build/Frontend/dist /app/Frontend/dist
+COPY --chown=node:node --from=prune /build/package*.json ./
+COPY --chown=node:node --from=prune /build/node_modules ./node_modules
+COPY --chown=node:node --from=prune /build/dist ./dist
+COPY --chown=node:node --from=prune /build/serve.js ./serve.js
 USER node
 EXPOSE 8080
-CMD ["node", "dist/index.node.js"]
+CMD ["node", "serve.js"]

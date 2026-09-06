@@ -1,0 +1,15 @@
+drizzle/meta/
+dist/
+src/routeTree.gen.ts
+
+# Application UI code predates Prettier in this repo (it lived in Frontend/,
+# which had no Prettier setup). Left as-is so the TanStack Start migration is
+# not buried under a whole-repo reformat; drop these lines to opt it in.
+src/api/
+src/components/
+src/features/
+src/lib/
+src/*.css
+
+# Compose files predate Prettier in this repo.
+docker-compose*.yml

@@ -1,13 +1,29 @@
 # TimeReport
 
-Time reporting app built with Hono, PostgreSQL, React and TypeScript.
+Time reporting app built as a single TanStack Start application with a Hono API.
 
 ## Tech Stack
 
-- **Backend**: Node.js 24, Hono, Drizzle ORM, PostgreSQL
-- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4, TanStack Query
+- **Framework**: TanStack Start (React 19, TanStack Router, Vite 8)
+- **API**: Hono, mounted as a server route at `/api/*`
+- **Data**: Drizzle ORM, PostgreSQL
 - **Auth**: Better Auth, BCrypt and HttpOnly/SameSite=Lax cookie sessions
-- **Deploy**: Single non-root Node container serving the Vite build
+- **UI**: Tailwind CSS v4, TanStack Query, Lexical
+- **Deploy**: Single non-root Node container
+
+## Architecture
+
+One Vite app builds both halves:
+
+- `src/routes/` — file-based routes. `_app.tsx` is the authenticated layout and
+  holds the session guard; `api/$.ts` is a splat server route that hands every
+  `/api/*` request to the Hono app untouched.
+- `src/server/` — the API: Hono routes, Drizzle schema, Better Auth, services.
+  Server-only; the Start plugin keeps it out of the client bundle.
+- `src/features/`, `src/components/`, `src/api/` — the UI and its fetch wrappers.
+
+The API contract is unchanged from when the backend was a standalone server;
+see [docs/contract-inventory.md](docs/contract-inventory.md).
 
 ## Getting Started
 
@@ -16,115 +32,56 @@ Time reporting app built with Hono, PostgreSQL, React and TypeScript.
 - Node.js 24+
 - Docker for local PostgreSQL
 
-### Running in Development
-
 **Terminal 1 – PostgreSQL:**
+
 ```bash
 docker compose up -d db
 ```
 
-**Terminal 2 – Backend:**
+**Terminal 2 – app:**
+
 ```bash
-cd Backend
 npm install
 cp .env.example .env
 npm run db:migrate
 npm run dev
 ```
 
-**Terminal 3 – Frontend:**
-```bash
-cd Frontend
-npm install
-npm run dev
-# Frontend at http://localhost:5173 (proxies /api → Hono :3000)
-```
+Open http://localhost:5173. There is no proxy any more: the UI and the API are
+served from the same origin.
 
-Open http://localhost:5173 in your browser.
+### Environment
+
+`.env` configures the Node process (`DATABASE_URL`, `BETTER_AUTH_SECRET`,
+`BETTER_AUTH_URL`, `NODE_ENV`, `PORT`). Vite deliberately does **not** read it —
+`vite.config.ts` points `envDir` at the empty `env/` directory, because a
+`NODE_ENV=development` line in `.env` would otherwise make `vite build` emit a
+development bundle. Client-side `VITE_*` variables, if ever needed, belong in
+`env/`.
 
 ### Building for Production
 
 ```bash
-cd Frontend && npm run build
-cd ../Backend && npm run build
+npm run build   # -> dist/client and dist/server
+npm start       # serve.js serves dist/client and delegates to dist/server
 ```
 
 ### Docker
 
 ```bash
-# Build and run
 BETTER_AUTH_SECRET="replace-with-at-least-32-random-characters" docker compose up --build
-
 # App available at http://localhost:8080
 ```
 
-The Compose migration service exits before the app starts. Production injects a Supabase `DATABASE_URL`; database backup/restore is infrastructure, not a web endpoint.
-
-## Project Structure
-
-```
-Backend/
-├─ src/
-│  ├─ routes/                 One Hono router per resource
-│  ├─ auth/                   Better Auth setup and session middleware
-│  ├─ db/                     Drizzle schema and client
-│  ├─ services/               duration, time-entry-resolver, jira, csv
-│  └─ index.node.ts           Server entry, static files and SPA fallback
-├─ drizzle/                   Generated SQL migrations
-├─ scripts/db/                migrate, seed and test-database tooling
-├─ test/                      Vitest suites
-└─ docs/contract-inventory.md Full API contract
-Frontend/
-└─ src/
-   ├─ api/                    Fetch wrappers per resource
-   ├─ components/             Shared UI components
-   ├─ features/               Feature modules (dashboard, projects, tasks...)
-   └─ lib/                    Helper functions (durationParser, dateUtils...)
-```
-
-## API Endpoints
-
-### Auth (no authentication required)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/auth/setup-status | Are there any users? |
-| POST | /api/auth/setup | Create first admin user |
-| POST | /api/auth/login | Log in |
-| POST | /api/auth/logout | Log out |
-| POST | /api/auth/register | Register new user |
-| GET | /api/auth/me | Get current user |
-
-### Time Entries
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/time-entries?date= | Get entries for a date |
-| POST | /api/time-entries | Create entry (prepend, position 0) |
-| PUT | /api/time-entries/{id} | Update |
-| DELETE | /api/time-entries/{id} | Delete |
-| POST | /api/time-entries/{id}/duplicate | Duplicate |
-| POST | /api/time-entries/reorder | Reorder |
-| GET | /api/time-entries/weekly-summary?date= | Weekly summary (Mon–Sun) |
-| POST | /api/time-entries/{id}/push-to-jira | Push worklog to Jira |
-| GET | /api/time-entries/export?from=&to= | CSV export |
-
-Projects, tasks, tags, daily notes, planner and profile follow the same shape; see `Backend/docs/contract-inventory.md` for the full contract.
-
-## Tests
+## Checks
 
 ```bash
-cd Backend
-npm run typecheck
+npm run typecheck   # app project, then the stricter server project
 npm run lint
-npm run format:check
-npm test
+npm test            # set TEST_DATABASE_URL for the PostgreSQL contract tests
 ```
 
-Unit and route tests run without a database. The PostgreSQL contract suite is
-skipped unless `TEST_DATABASE_URL` is set; it deliberately refuses to fall back
-to `DATABASE_URL`, so it can never touch a development or production database.
-
-```bash
-cd Backend
-NODE_ENV=test TEST_DATABASE_URL=postgresql://... npm run db:reset:test
-NODE_ENV=test TEST_DATABASE_URL=postgresql://... npm test
-```
+`tsconfig.json` covers the UI; `tsconfig.server.json` adds the stricter flags
+(`noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`,
+`noPropertyAccessFromIndexSignature`) that `src/server`, `test` and `scripts`
+were written against. ESLint mirrors the same split.

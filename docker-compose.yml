@@ -19,7 +19,7 @@ services:
   migrate:
     build:
       context: .
-      target: backend-build
+      target: build
     depends_on:
       db:
         condition: service_healthy
